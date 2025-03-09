@@ -1,0 +1,74 @@
+name: Continuous Integration
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "continuous_integration"
+  build-test-publish:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Set up JDK 21 for x64 build
+      - name: Set up JDK 21 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: x64
+
+      # Maven test, build and package compiled code in its distributable format, such as a JAR.
+      - name: Maven package
+        run: mvn package
+
+      - name: Create folder
+        run: mkdir staging && cp target/*.jar staging
+
+      - name: Upload JAR file
+        uses: actions/upload-artifact@v4
+        with:
+          name: project
+          path: staging
+
+      # Perform PMD code check
+      - name: PMD code check
+        uses: pmd/pmd-github-action@v2
+        id: pmd
+        with:
+          version: '6.55.0'
+          sourcePath: 'src/main/java'
+          rulesets: 'ruleset.xml'
+          createGitHubAnnotations: true
+          analyzeModifiedFilesOnly: false
+      
+      # Publish test results of executed unit tests
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            **/*.xml
+            **/*.trx
+            **/*.json
+            !ruleset.xml
+            !log4j2.xml
+            !**/log4j2.xml
+            !**/pmd/*.*
+            !pom.xml
+            !**/target/*
+            !**/target/pmd/rulesets/*.*
+          
