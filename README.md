@@ -40,6 +40,8 @@ git status
 * Datei zur Staging Area hinzufügen:
 ```
 git add <Datei>
+
+git add .
 ```
 * Änderungen speichen:
 ```
