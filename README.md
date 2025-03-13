@@ -71,3 +71,93 @@ git merge <Branch>
 ```
 git log
 ```
+
+## 4. Integration von Git in Programmierumgebungen
+
+### 1. Git in der IDE aktivieren
+
+#### Visual Studio Code
+* Falls Git nicht erkannt wird: **Git installieren** → [git-scm.com](https://git-scm.com)
+* **Repository initialisieren**  
+  1. Öffne ein Projektverzeichnis  
+  2. Terminal öffnen (`Strg + ö` oder `Strg + Shift + P` → "Git: Initialize Repository")  
+  3. Erstes Commit:
+     ```
+     git add .
+     git commit -m "Initial commit"
+     ```
+  4. GitHub-Repo verknüpfen:
+     ```
+     git remote add origin <URL>
+     git push -u origin main
+     ```
+
+#### IntelliJ IDEA
+* **Git aktivieren:**  
+  * `File` → `Settings` → `Version Control` → `Git`
+* **Projekt mit bestehendem Git-Repo verknüpfen:**  
+  * `VCS` → `Enable Version Control Integration` → Git auswählen  
+* **Änderungen verfolgen:**  
+  * `Git` → `Commit` → `Push`
+
+---
+
+### 2. Typische Git-Workflows in der IDE
+
+#### A) Repository klonen
+* **VS Code:**  
+  * `Strg + Shift + P` → "Git: Clone"  
+  * Repository-URL eingeben  
+* **IntelliJ:**  
+  * `Get from VCS` → Repository-URL einfügen  
+
+#### B) Änderungen vornehmen & committen
+* **VS Code:**  
+  * Git-Panel öffnen (links) → Änderungen sehen  
+  * Änderungen "stagen" → Commit-Nachricht eingeben → `✔️ Commit`  
+* **IntelliJ:**  
+  * `Commit`-Fenster öffnen (`Alt + 0`) → Änderungen auswählen → `Commit`
+
+#### C) Branches erstellen & wechseln
+* **VS Code:**  
+  * `Strg + Shift + P` → "Git: Create Branch"  
+  * Wechseln mit:  
+    ```
+    git checkout <branch-name>
+    ```  
+* **IntelliJ:**  
+  * Unten rechts: Branch-Menü → `New Branch`  
+  * Wechseln mit:  
+    ```
+    git checkout <branch-name>
+    ```
+
+#### D) Änderungen pushen & pullen
+* **VS Code:**  
+  * Änderungen hochladen:  
+    ```
+    git push origin <branch>
+    ```
+* **IntelliJ:**  
+  * Änderungen hochladen:  
+    * `VCS` → `Git` → `Push`  
+  * Neueste Änderungen abrufen:  
+    * `VCS` → `Git` → `Pull`  
+
+#### E) Code Reviews mit Pull Requests (GitHub)
+* **Neuen Branch pushen:**
+  ```
+  git push -u origin feature-branch
+* Auf GitHub eine **Pull Request (PR)** erstellen
+* Änderungen reviewen & mergen
+
+#### F) Konflikte lösen in der IDE
+*	Konflikt entsteht bei git pull oder Merge: 
+  *	VS Code: Konflikt-Datei öffnen → Optionen auswählen → speichern
+  *	IntelliJ: Merge Conflicts Fenster → Änderungen akzeptieren
+*	Nach Lösung:
+```
+git add .
+git commit -m "Merge conflict resolved"
+git push
+```
