@@ -152,12 +152,16 @@ git log
 * Änderungen reviewen & mergen
 
 #### F) Konflikte lösen in der IDE
-*	Konflikt entsteht bei git pull oder Merge: 
-  *	VS Code: Konflikt-Datei öffnen → Optionen auswählen → speichern
-  *	IntelliJ: Merge Conflicts Fenster → Änderungen akzeptieren
-*	Nach Lösung:
-```
-git add .
-git commit -m "Merge conflict resolved"
-git push
-```
+* **Konflikt entsteht bei `git pull` oder Merge:**  
+  * **VS Code:**  
+    * Konflikt-Datei öffnen  
+    * Optionen auswählen (z. B. "Current Change" oder "Incoming Change")  
+    * Änderungen speichern  
+  * **IntelliJ:**  
+    * `Merge Conflicts`-Fenster öffnen  
+    * Änderungen akzeptieren  
+* **Nach der Lösung:**  
+  ```
+  git add .
+  git commit -m "Merge conflict resolved"
+  git push
