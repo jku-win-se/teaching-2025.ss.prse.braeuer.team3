@@ -114,7 +114,7 @@ git log
 #### B) Änderungen vornehmen & committen
 * **VS Code:**  
   * Git-Panel öffnen (links) → Änderungen sehen  
-  * Änderungen "stagen" → Commit-Nachricht eingeben → `✔️ Commit`  
+  * Änderungen "stagen" → Commit-Nachricht eingeben → ` Commit`  
 * **IntelliJ:**  
   * `Commit`-Fenster öffnen (`Alt + 0`) → Änderungen auswählen → `Commit`
 
