@@ -5,21 +5,21 @@ Git ist ein verteiltes Versionskontrollsystem, das es ermöglicht, Änderungen a
 * Dezentrales System - Jeder Entwickler hat eine eigene vollständige Kopie der Repos
 * Offline-fähig - Man kann lokal arbeiten und später Änderungen hochladen.
 ## 2. Funktionen von Git
-#### 1. Versionierung & Historie
+####  Versionierung & Historie
 * Jeder Code-Änderung wird gespeichert (Commit)
 * Möglichkeit, ältere Versionen wiederherstellen
-#### 2. Branching & Merging
+####  Branching & Merging
 * Parallele Entwicklung möglich
 * Eigene Feature-Branches ohne das Hauptprojekt zu beeinflussen
 * Merging: Änderungen aus einem Branche in einen anderen übernehmen
-#### 3. Staging Area
+####  Staging Area
 * Arbeitsbereich (Working Directory) -> Staging Area -> Repository (Commits)
 * Änderungen können erst geprüft werden, bevor sie final gespeichert werden
-#### 4. Remote-Repositories & Zusammenarbeit
+####  Remote-Repositories & Zusammenarbeit
 * GitHub, GitLab oder Bitbucket für Teamwork
 * Push & Pull: Änderungen hochladen und abrufen
 * Pull Requests & Code-Reviews: Zusammenarbeit im Team
-#### 5. Rollback & Fehlerkorrektur
+####  Rollback & Fehlerkorrektur
 * Änderungen zurücksetzen
 * Letzten Commit ändern
 ## 3. Wichtige Git-Befehle
