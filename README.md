@@ -72,7 +72,16 @@ git merge <Branch>
 git log
 ```
 
-## 4. Integration von Git in Programmierumgebungen
+## 4. Git: Desktop-Anwendungen und Integration von Git in Programmierumgebungen
+Git ist ein flexibles Werkzeug, das auf verschiedene Arten genutzt werden kann, einschließlich der Verwendung über die Kommandozeile (CLI - Command Line Interface), mit grafischen Benutzeroberflächen (GUI - Graphical User Interface)
+- Das Terminal ist leistungsstark, aber für Anfänger oft nicht intuitiv.
+- Grafische Benutzeroberflächen (GUI) erleichtern die Visualisierung von Commits und Branches.
+- Entwicklungsumgebungen wie IntelliJ IDEA und Visual Studio Code bieten integrierte Git-Unterstützung.
+- Wahl: Abhängig von Kenntnisstand und Anforderungen
+
+#### Überblick: Desktop-Git-Tools im Vergleich
+
+![Überblick: Desktop-Git-Tools im Vergleich](https://github.com/jku-win-se/teaching-2025.ss.prse.braeuer.team3/blob/44eac73d5a3c1b935a009675a8a3d48547058692/git1.png)
 
 ### 1. Git in der IDE aktivieren
 
