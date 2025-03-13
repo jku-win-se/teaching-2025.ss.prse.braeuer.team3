@@ -80,7 +80,7 @@ git log
 * Falls Git nicht erkannt wird: **Git installieren** → [git-scm.com](https://git-scm.com)
 * **Repository initialisieren**  
   1. Öffne ein Projektverzeichnis  
-  2. Terminal öffnen (`Strg + ö` oder `Strg + Shift + P` → "Git: Initialize Repository")  
+  2. Terminal öffnen (Strg + ö oder Strg + Shift + P → "Git: Initialize Repository")  
   3. Erstes Commit:
      ```
      git add .
@@ -94,11 +94,11 @@ git log
 
 #### IntelliJ IDEA
 * **Git aktivieren:**  
-  * `File` → `Settings` → `Version Control` → `Git`
+  * File → Settings → Version Control → Git
 * **Projekt mit bestehendem Git-Repo verknüpfen:**  
-  * `VCS` → `Enable Version Control Integration` → Git auswählen  
+  * VCS → Enable Version Control Integration → Git auswählen  
 * **Änderungen verfolgen:**  
-  * `Git` → `Commit` → `Push`
+  * Git → Commit → Push
 
 ---
 
@@ -106,27 +106,27 @@ git log
 
 #### A) Repository klonen
 * **VS Code:**  
-  * `Strg + Shift + P` → "Git: Clone"  
+  * Strg + Shift + P → "Git: Clone"  
   * Repository-URL eingeben  
 * **IntelliJ:**  
-  * `Get from VCS` → Repository-URL einfügen  
+  * Get from VCS → Repository-URL einfügen  
 
 #### B) Änderungen vornehmen & committen
 * **VS Code:**  
   * Git-Panel öffnen (links) → Änderungen sehen  
-  * Änderungen "stagen" → Commit-Nachricht eingeben → ` Commit`  
+  * Änderungen "stagen" → Commit-Nachricht eingeben → Commit 
 * **IntelliJ:**  
-  * `Commit`-Fenster öffnen (`Alt + 0`) → Änderungen auswählen → `Commit`
+  * Commit-Fenster öffnen (Alt + 0) → Änderungen auswählen → Commit
 
 #### C) Branches erstellen & wechseln
 * **VS Code:**  
-  * `Strg + Shift + P` → "Git: Create Branch"  
+  * Strg + Shift + P → "Git: Create Branch"  
   * Wechseln mit:  
     ```
     git checkout <branch-name>
     ```  
 * **IntelliJ:**  
-  * Unten rechts: Branch-Menü → `New Branch`  
+  * Unten rechts: Branch-Menü → New Branch 
   * Wechseln mit:  
     ```
     git checkout <branch-name>
@@ -140,9 +140,9 @@ git log
     ```
 * **IntelliJ:**  
   * Änderungen hochladen:  
-    * `VCS` → `Git` → `Push`  
+    * VCS → Git → Push 
   * Neueste Änderungen abrufen:  
-    * `VCS` → `Git` → `Pull`  
+    * VCS → Git → Pull  
 
 #### E) Code Reviews mit Pull Requests (GitHub)
 * **Neuen Branch pushen:**
@@ -152,13 +152,13 @@ git log
 * Änderungen reviewen & mergen
 
 #### F) Konflikte lösen in der IDE
-* **Konflikt entsteht bei `git pull` oder Merge:**  
+* **Konflikt entsteht bei git pull oder Merge:**  
   * **VS Code:**  
     * Konflikt-Datei öffnen  
     * Optionen auswählen (z. B. "Current Change" oder "Incoming Change")  
     * Änderungen speichern  
   * **IntelliJ:**  
-    * `Merge Conflicts`-Fenster öffnen  
+    * Merge Conflicts-Fenster öffnen  
     * Änderungen akzeptieren  
 * **Nach der Lösung:**  
   ```
