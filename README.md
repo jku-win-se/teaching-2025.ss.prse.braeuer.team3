@@ -2,26 +2,24 @@
 ## Git (mit GitHub)
 ## 1. Was ist Git?
 Git ist ein verteiltes Versionskontrollsystem, das es ermöglicht, Änderungen am Code zu verfolgen und in Teams effizient zusammenarbeiten.
-* Dezentrales System - Jeder Entwickler hat eine eigene vollständige Kopie der Repos
+* Dezentrales System - Jeder Entwickler hat eine eigene vollständige Kopie der Repos.
 * Offline-fähig - Man kann lokal arbeiten und später Änderungen hochladen.
 ## 2. Funktionen von Git
-####  Versionierung & Historie
-* Jeder Code-Änderung wird gespeichert (Commit)
-* Möglichkeit, ältere Versionen wiederherstellen
+####  Versionskontrolle
+* Git speichert und verfolgt alle Versionen eines Projekts.
+* Möglichkeit, ältere Versionen wiederherstellen.
 ####  Branching & Merging
-* Parallele Entwicklung möglich
-* Eigene Feature-Branches ohne das Hauptprojekt zu beeinflussen
-* Merging: Änderungen aus einem Branche in einen anderen übernehmen
-####  Staging Area
-* Arbeitsbereich (Working Directory) -> Staging Area -> Repository (Commits)
-* Änderungen können erst geprüft werden, bevor sie final gespeichert werden
-####  Remote-Repositories & Zusammenarbeit
-* GitHub, GitLab oder Bitbucket für Teamwork
-* Push & Pull: Änderungen hochladen und abrufen
-* Pull Requests & Code-Reviews: Zusammenarbeit im Team
-####  Rollback & Fehlerkorrektur
-* Änderungen zurücksetzen
-* Letzten Commit ändern
+* Parallele Entwicklung möglich.
+* Eigene Feature-Branches ohne das Hauptprojekt zu beeinflussen.
+* Merging: Sobald die Arbeit in einem Branch abgeschlossen ist, kann er in den Master-Branch "gemerged" (zusammengeführt) werden.
+####  Konfliktmanagement:
+*  Konflikte erkennen:Wenn zwei Entwickler gleichzeitig Änderungen an der gleichen Codezeile vornehmen, erkennt Git diese Änderungen und den hilft den Entwicklern, den entstandenen Konflikt zu lösen.
+####  Remote-Repositories 
+* GitHub, GitLab oder Bitbucket für Teamwork.
+* Push & Pull: Änderungen hochladen und abrufen.
+####  Rollback 
+* Änderungen zurücksetzen.
+
 ## 3. Wichtige Git-Befehle
 Hier sind die wichtigsten Git-Befehle für die täglichen Arbeiten:
 
