@@ -1,5 +1,5 @@
 # Praktikum Software Engineering: Lunchify
-## Test
+## Git (mit Github)
 ## 1. Was ist Git?
 Git ist ein verteiltes Versionskontrollsystem, das es ermöglicht, Änderungen am Code zu verfolgen und in Teams effizient zusammenarbeiten.
 * Dezentrales System - Jeder Entwickler hat eine eigene vollständige Kopie der Repos.

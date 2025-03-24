@@ -21,7 +21,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>at.jku.se.calculator.SimpleCalculator</mainClass>
+							<mainClass>at.jku.se.lunchify.LunchifyApp</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
