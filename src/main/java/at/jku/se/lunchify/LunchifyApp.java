@@ -1,22 +1,17 @@
 package at.jku.se.lunchify;
 
+import view.LoginView;
+
+import javax.swing.*;
 
 public class LunchifyApp {
-//abc
 
-	/**
-	 * UI Components
-	 */
-
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
-
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.invokeLater(() -> new LoginView());
 	}
-
-	/**
-	 * Create the frame.
-	 */
-
 }
