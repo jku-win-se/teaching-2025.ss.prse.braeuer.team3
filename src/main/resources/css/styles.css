@@ -1,0 +1,58 @@
+/* Linker Bereich */
+.left-panel {
+    -fx-background-color: #F06931;
+}
+
+.headline {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.subtext {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* Rechter Bereich */
+.right-panel {
+    -fx-background-color: white;
+}
+
+.title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f26c2f;
+    -fx-padding: 0 0 -5 0; /* minimal nach oben ziehen */
+}
+
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #f26c2f;
+    -fx-padding: -5 0 0 0; /* minimal nach oben ziehen */
+}
+
+/* Eingabefelder */
+.input-field {
+    -fx-background-color: #F8FAFA;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+    -fx-pref-width: 250px;
+    -fx-padding: 10;
+}
+
+/* Button */
+.login-button {
+    -fx-background-color: #F06931;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 20;
+    -fx-pref-width: 200px;
+}
+
+/* Hyperlink */
+.forgot-link {
+    -fx-text-fill: #F06931;
+    -fx-underline: true;
+}

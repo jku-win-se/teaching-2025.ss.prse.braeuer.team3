@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.LoginController">
+
+    <!-- LINKER PANEL -->
+    <left>
+        <VBox styleClass="left-panel" spacing="10.0" alignment="CENTER_LEFT" prefWidth="300">
+            <children>
+                <Label text="Welcome back!" styleClass="headline"/>
+                <Label text="Please login with your personal information to use the services of Lunchify."
+                       wrapText="true" styleClass="subtext"/>
+            </children>
+            <padding><Insets top="60" left="30" right="30" bottom="30"/></padding>
+        </VBox>
+    </left>
+
+    <!-- RECHTER PANEL -->
+    <center>
+        <VBox alignment="CENTER" spacing="12.0" styleClass="right-panel">
+            <children>
+                <VBox alignment="CENTER" spacing="2">
+                    <ImageView fx:id="logoImage" fitWidth="45" preserveRatio="true"/>
+                    <Label text="Lunchify" styleClass="title"/>
+                    <Label text="Login" styleClass="subtitle"/>
+                    <ProgressIndicator fx:id="loadingSpinner" visible="false" maxWidth="24" maxHeight="24"/>
+                </VBox>
+
+                <TextField fx:id="emailField" promptText="Email" styleClass="input-field"/>
+                <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
+
+                <Button text="SIGN IN" fx:id="loginButton" styleClass="login-button"/>
+                <Hyperlink fx:id="forgotPasswordLink" text="Forgot your password?" styleClass="forgot-link"/>
+            </children>
+            <padding><Insets top="60" left="60" right="60" bottom="60"/></padding>
+        </VBox>
+    </center>
+</BorderPane>

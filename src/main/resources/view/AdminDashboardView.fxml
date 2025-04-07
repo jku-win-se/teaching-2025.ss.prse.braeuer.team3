@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.AdminDashboardController">
+
+    <top>
+        <Label text="👑 Willkommen im Admin-Dashboard"
+               style="-fx-font-size: 20px; -fx-padding: 20;"/>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="10">
+            <children>
+                <Label text="Hier kannst du demnächst Anträge prüfen, Benutzer verwalten usw."/>
+                <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout"/>
+            </children>
+        </VBox>
+    </center>
+
+</BorderPane>
+
