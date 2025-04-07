@@ -27,6 +27,14 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>0.0.8</version>
+				<configuration>
+					<mainClass>at.jku.se.lunchify.LunchifyApp</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>3.22.0</version>
@@ -63,7 +71,7 @@
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>19</version>
+			<version>21.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>

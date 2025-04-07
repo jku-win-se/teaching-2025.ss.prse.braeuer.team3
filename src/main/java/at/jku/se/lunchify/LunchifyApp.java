@@ -1,17 +1,27 @@
 package at.jku.se.lunchify;
 
-import view.LoginView;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
 
-import javax.swing.*;
+public class LunchifyApp extends Application {
 
-public class LunchifyApp {
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
+		Scene scene = new Scene(root);
+		scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+
+		primaryStage.setTitle("Lunchify Login");
+		primaryStage.setScene(scene);
+		primaryStage.setResizable(false);
+		primaryStage.show();
+	}
 
 	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		SwingUtilities.invokeLater(() -> new LoginView());
+		launch(args); // Wichtig für JavaFX
 	}
 }
+
