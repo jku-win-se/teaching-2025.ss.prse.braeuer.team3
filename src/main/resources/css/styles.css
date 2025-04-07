@@ -20,14 +20,16 @@
 }
 
 .title {
-    -fx-font-size: 26px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #F06931;
+    -fx-text-fill: #f26c2f;
+    -fx-padding: 0 0 -5 0; /* minimal nach oben ziehen */
 }
 
 .subtitle {
-    -fx-font-size: 16px;
-    -fx-text-fill: #F06931;
+    -fx-font-size: 14px;
+    -fx-text-fill: #f26c2f;
+    -fx-padding: -5 0 0 0; /* minimal nach oben ziehen */
 }
 
 /* Eingabefelder */

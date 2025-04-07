@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
@@ -26,15 +27,18 @@
     <center>
         <VBox alignment="CENTER" spacing="12.0" styleClass="right-panel">
             <children>
-                <ImageView fx:id="logoImage" fitWidth="80" preserveRatio="true"/>
-                <Label text="Lunchify" styleClass="title"/>
-                <Label text="Login" styleClass="subtitle"/>
+                <VBox alignment="CENTER" spacing="2">
+                    <ImageView fx:id="logoImage" fitWidth="45" preserveRatio="true"/>
+                    <Label text="Lunchify" styleClass="title"/>
+                    <Label text="Login" styleClass="subtitle"/>
+                    <ProgressIndicator fx:id="loadingSpinner" visible="false" maxWidth="24" maxHeight="24"/>
+                </VBox>
 
                 <TextField fx:id="emailField" promptText="Email" styleClass="input-field"/>
                 <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
 
                 <Button text="SIGN IN" fx:id="loginButton" styleClass="login-button"/>
-                <Hyperlink text="Forgot your password?" styleClass="forgot-link"/>
+                <Hyperlink fx:id="forgotPasswordLink" text="Forgot your password?" styleClass="forgot-link"/>
             </children>
             <padding><Insets top="60" left="60" right="60" bottom="60"/></padding>
         </VBox>

@@ -69,9 +69,20 @@
 			<version>11.1.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>0.4</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
 			<version>21.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.7.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>

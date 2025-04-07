@@ -5,12 +5,14 @@ public class User {
     private String email;
     private String password;
     private String name;
+    private String rolle; // 👈 neues Feld für Benutzerrolle
 
-    public User(int id, String email, String password, String name) {
+    public User(int id, String email, String password, String name, String rolle) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
+        this.rolle = rolle;
     }
 
     // Getter
@@ -30,6 +32,10 @@ public class User {
         return name;
     }
 
+    public String getRolle() {
+        return rolle;
+    }
+
     // Setter
     public void setId(int id) {
         this.id = id;
@@ -45,5 +51,9 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setRolle(String rolle) {
+        this.rolle = rolle;
     }
 }

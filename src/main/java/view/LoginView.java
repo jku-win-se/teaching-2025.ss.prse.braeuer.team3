@@ -1,72 +1,65 @@
 package view;
 
 import controller.LoginController;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+public class LoginView extends Application {
 
-public class LoginView extends JFrame {
+    private TextField emailField;
+    private PasswordField passwordField;
+    private Label statusLabel;
 
-    private JTextField emailField;
-    private JPasswordField passwordField;
-    private JButton loginButton;
-    private JLabel statusLabel;
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Lunchify Login");
 
-    public LoginView() {
-        setTitle("Lunchify Login");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 200);
-        setLocationRelativeTo(null);
+        emailField = new TextField();
+        passwordField = new PasswordField();
+        Button loginButton = new Button("Login");
+        statusLabel = new Label();
 
-        initComponents();
-        setVisible(true);
-    }
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setStyle("-fx-padding: 20");
 
-    private void initComponents() {
-        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        grid.add(new Label("E-Mail:"), 0, 0);
+        grid.add(emailField, 1, 0);
 
-        emailField = new JTextField();
-        passwordField = new JPasswordField();
-        loginButton = new JButton("Login");
-        statusLabel = new JLabel("", SwingConstants.CENTER);
+        grid.add(new Label("Passwort:"), 0, 1);
+        grid.add(passwordField, 1, 1);
 
-        panel.add(new JLabel("E-Mail:"));
-        panel.add(emailField);
-        panel.add(new JLabel("Passwort:"));
-        panel.add(passwordField);
+        VBox layout = new VBox(15, grid, loginButton, statusLabel);
+        layout.setStyle("-fx-padding: 20");
 
-        add(panel, BorderLayout.CENTER);
-        add(loginButton, BorderLayout.SOUTH);
-        add(statusLabel, BorderLayout.NORTH);
+        loginButton.setOnAction(e -> handleLogin());
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleLogin();
-            }
-        });
+        Scene scene = new Scene(layout, 400, 200);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     private void handleLogin() {
         String email = emailField.getText();
-        String password = new String(passwordField.getPassword());
+        String password = passwordField.getText();
 
         LoginController loginController = new LoginController();
         boolean success = loginController.login(email, password);
 
         if (success) {
             statusLabel.setText("Login erfolgreich!");
-            // TODO: Weiterleitung zur Hauptansicht
+            // TODO: Scene-Wechsel zum Dashboard
         } else {
             statusLabel.setText("E-Mail oder Passwort falsch.");
         }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new LoginView());
+        launch(args);
     }
 }
-
