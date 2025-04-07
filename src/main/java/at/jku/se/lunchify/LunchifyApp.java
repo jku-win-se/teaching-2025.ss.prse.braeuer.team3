@@ -21,7 +21,7 @@ public class LunchifyApp extends Application {
 	}
 
 	public static void main(String[] args) {
-		launch(args); // Wichtig für JavaFX
+		launch(args);
 	}
 }
 
