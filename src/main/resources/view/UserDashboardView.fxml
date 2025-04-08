@@ -6,7 +6,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Pos?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.UserDashboardController"
             stylesheets="@/css/dashboard.css">
 
     <!-- Sidebar -->
@@ -18,16 +20,20 @@
             <ToggleButton text=" Starred" styleClass="sidebar-button" />
             <ToggleButton text=" Requests" styleClass="sidebar-button" />
             <ToggleButton text=" Settings" styleClass="sidebar-button" />
-            <Button text=" Log out" styleClass="sidebar-button" />
+            <Button fx:id="logoutButton" text=" Log out" styleClass="sidebar-button" onAction="#handleLogout"/>
         </VBox>
     </left>
 
-    <!-- Hauptinhalt -->
+    <!-- Main content -->
     <center>
         <VBox spacing="30" alignment="TOP_CENTER" style="-fx-padding: 30;">
-            <HBox alignment="CENTER_RIGHT" spacing="20">
-                <Button text="ADD NEW +" style="-fx-background-color: #E07945; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 30;" />
-                <Label text="Test User" />
+            <!-- Header with Add New + Username -->
+            <HBox alignment="CENTER_RIGHT" spacing="20" BorderPane.alignment="TOP_RIGHT">
+                <Button fx:id="addNewButton"
+                        onAction="#handleAddNew"
+                        text="ADD NEW +"
+                        style="-fx-background-color: #E07945; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 30;" />
+                <Label fx:id="userNameText" text="User" style="-fx-font-size: 14; -fx-text-fill: #333;" />
             </HBox>
 
             <!-- Starred -->

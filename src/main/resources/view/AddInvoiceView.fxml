@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.AddInvoiceController"
+            prefWidth="500" prefHeight="500"
+            style="-fx-background-color: white; -fx-border-radius: 15; -fx-background-radius: 15;">
+
+    <fx:define>
+        <ToggleGroup fx:id="group"/>
+    </fx:define>
+
+    <VBox spacing="15" alignment="TOP_CENTER" layoutX="50" layoutY="20">
+        <Label text="Upload invoice" style="-fx-font-size: 20; -fx-text-fill: #e07945; -fx-font-weight: bold;" />
+        <Label text="Select and upload the file of your choice to request reimbursement" style="-fx-font-size: 12;" />
+
+        <Button fx:id="uploadButton" text="Choose file" onAction="#handleFileChoose"
+                style="-fx-background-color: #e07945; -fx-text-fill: white; -fx-background-radius: 10;"/>
+
+        <Label fx:id="fileNameLabel" text="No file selected" />
+
+        <Label text="Invoice type:" />
+        <HBox spacing="10" alignment="CENTER">
+            <RadioButton fx:id="restaurantRadio" text="Restaurant" toggleGroup="$group" />
+            <RadioButton fx:id="supermarketRadio" text="Supermarket" toggleGroup="$group" />
+        </HBox>
+
+        <Label text="Total amount (€):" />
+        <TextField fx:id="amountField" promptText="e.g. 5.90" />
+
+        <Button fx:id="submitButton" text="Submit"
+                onAction="#handleSubmit"
+                style="-fx-background-color: #e07945; -fx-text-fill: white; -fx-background-radius: 10;" />
+
+        <Label fx:id="errorLabel" textFill="red" visible="false"/>
+    </VBox>
+</AnchorPane>
