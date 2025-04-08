@@ -1,3 +1,9 @@
+#UML-Diagramm
+
+
+![UML_prse](https://github.com/user-attachments/assets/368fc4b0-d02f-4a65-980c-f76ed93e2c02)
+
+
 # Praktikum Software Engineering: Lunchify
 ## Git (mit Github)
 ## 1. Was ist Git?
@@ -172,3 +178,7 @@ Git ist ein flexibles Werkzeug, das auf verschiedene Arten genutzt werden kann, 
   git add .
   git commit -m "Merge conflict resolved"
   git push
+
+
+
+  
