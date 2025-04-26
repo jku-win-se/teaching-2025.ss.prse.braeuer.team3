@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      spacing="20" alignment="TOP_CENTER" style="-fx-padding: 40;">
+
+    <Label text="Starred Requests" style="-fx-font-size: 24; -fx-font-weight: bold;" />
+
+    <Label text="No starred requests yet." style="-fx-font-size: 16;" />
+
+</VBox>

@@ -42,7 +42,7 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        Image logo = new Image(getClass().getResourceAsStream("/assets/logo.png"));
+        Image logo = new Image(getClass().getResourceAsStream("/images/logo.png"));
         logoImage.setImage(logo);
 
         loadingSpinner.setVisible(false);

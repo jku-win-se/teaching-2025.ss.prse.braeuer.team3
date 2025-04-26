@@ -2,75 +2,154 @@ package controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.scene.Parent;
 import model.Session;
-import model.User;
 
 import java.io.IOException;
 
 public class UserDashboardController {
 
-    @FXML private HBox starredBox;
-    @FXML private HBox recentlyViewedBox;
-    @FXML private Button logoutButton;
-    @FXML private Text userNameText;
+    @FXML
+    private BorderPane mainPane;
+
+    @FXML
+    private TilePane starredBox;
+
+    @FXML
+    private TilePane recentlyViewedBox;
+
+    @FXML
+    private Label userNameLabel;
+
+    @FXML
+    private ImageView logoImage;
 
     @FXML
     public void initialize() {
-        loadUserInfo();
-        loadPreviews();
+        if (Session.getCurrentUser() == null) {
+            // Kein User eingeloggt -> zurück zum LoginView
+            try {
+                Stage stage = (Stage) mainPane.getScene().getWindow();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.setTitle("Login");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return; // wichtig, damit der Rest nicht mehr ausgeführt wird
+        }
+
+        // Wenn eingeloggt: Benutzername anzeigen
+        userNameLabel.setText(Session.getCurrentUser().getName());
+        if (logoImage != null) {
+            logoImage.setImage(new Image(getClass().getResourceAsStream("/images/logo.png")));
+        }
+        // Starred und Recently Viewed Previews laden
+        loadStarredPreviews();
+        loadRecentlyViewedPreviews();
     }
 
-    private void loadUserInfo() {
-        User currentUser = Session.getCurrentUser();
-        if (currentUser != null) {
-            userNameText.setText(currentUser.getName());
-        } else {
-            userNameText.setText("Unknown User");
-        }
+
+    private void loadStarredPreviews() {
+        starredBox.getChildren().clear();
+        starredBox.getChildren().add(createCard("star_card.png"));
     }
 
-    private void loadPreviews() {
-        Image starImage = new Image(getClass().getResourceAsStream("/assets/star_card.png"));
-        Image eyeImage = new Image(getClass().getResourceAsStream("/assets/eye_card.png"));
+    private void loadRecentlyViewedPreviews() {
+        recentlyViewedBox.getChildren().clear();
+        recentlyViewedBox.getChildren().add(createCard("eye_card.png"));
+    }
 
-        for (int i = 0; i < 3; i++) {
-            ImageView starView = new ImageView(starImage);
-            starView.setFitWidth(180);
-            starView.setFitHeight(120);
-            starView.getStyleClass().add("image-preview");
-            starredBox.getChildren().add(starView);
+    private VBox createCard(String imageName) {
+        ImageView previewImage = new ImageView();
+        try {
+            Image image = new Image(
+                    getClass().getResourceAsStream("/images/" + imageName),
+                    150, 150,
+                    true,
+                    true
+            );
+            previewImage.setImage(image);
+        } catch (Exception e) {
+            System.out.println("Image not found: /images/" + imageName);
         }
+        previewImage.setPreserveRatio(true);
 
-        for (int i = 0; i < 3; i++) {
-            ImageView eyeView = new ImageView(eyeImage);
-            eyeView.setFitWidth(180);
-            eyeView.setFitHeight(120);
-            eyeView.getStyleClass().add("image-preview");
-            recentlyViewedBox.getChildren().add(eyeView);
-        }
+        VBox box = new VBox(previewImage);
+        box.setStyle("-fx-background-color: white; -fx-border-color: #ccc; -fx-padding: 10; -fx-background-radius: 10; -fx-border-radius: 10;");
+        box.setPrefSize(160, 160);
+        box.setMaxSize(160, 160);
+        box.setAlignment(javafx.geometry.Pos.CENTER);
+
+        return box;
+    }
+
+
+    // Methoden für Sidebar-Buttons
+
+    @FXML
+    private void handleHomeClick() {
+        starredBox.setVisible(true);
+        recentlyViewedBox.setVisible(true);
+        mainPane.setCenter(null);
+    }
+
+    @FXML
+    private void handleStarredClick() {
+        switchContent("/view/StarredView.fxml");
+    }
+
+    @FXML
+    private void handleRequestsClick() {
+        switchContent("/view/RequestHistoryView.fxml");
+    }
+
+    @FXML
+    private void handleSettingsClick() {
+        switchContent("/view/SettingsView.fxml");
     }
 
     @FXML
     private void handleLogout() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
+            Session.clearCurrentUser();
+            Stage stage = (Stage) mainPane.getScene().getWindow();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
             Parent root = loader.load();
-
-            Stage stage = (Stage) logoutButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Lunchify Login");
-            stage.setMaximized(false); // Reset window if needed
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Login");
             stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-            Session.clear(); // clear logged-in user
+
+    @FXML
+    private void handleAddNew() {
+        switchContent("/view/AddInvoiceView.fxml");
+    }
+
+
+    private void switchContent(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent content = loader.load();
+            mainPane.setCenter(content);
         } catch (IOException e) {
             e.printStackTrace();
         }

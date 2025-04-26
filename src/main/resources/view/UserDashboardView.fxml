@@ -6,39 +6,45 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Pos?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            stylesheets="@/css/dashboard.css">
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="controller.UserDashboardController"
+        fx:id="mainPane"
+        stylesheets="@/css/dashboard.css">
+
 
     <!-- Sidebar -->
     <left>
         <VBox spacing="20" alignment="TOP_CENTER" style="-fx-background-color: #FAFAFA;" prefWidth="150">
-            <ImageView fx:id="logoImage" fitHeight="60" fitWidth="120" style="-fx-padding: 20;" />
-
-            <ToggleButton text=" Home" styleClass="sidebar-button" />
-            <ToggleButton text=" Starred" styleClass="sidebar-button" />
-            <ToggleButton text=" Requests" styleClass="sidebar-button" />
-            <ToggleButton text=" Settings" styleClass="sidebar-button" />
-            <Button text=" Log out" styleClass="sidebar-button" />
+            <ImageView fx:id="logoImage" fitHeight="40" fitWidth="40" style="-fx-padding: 10;" />
+            <ToggleButton fx:id="homeButton" text="Home" styleClass="sidebar-button" onAction="#handleHomeClick"/>
+            <ToggleButton fx:id="starredButton" text="Starred" styleClass="sidebar-button" onAction="#handleStarredClick"/>
+            <ToggleButton fx:id="requestsButton" text="Requests" styleClass="sidebar-button" onAction="#handleRequestsClick"/>
+            <ToggleButton fx:id="settingsButton" text="Settings" styleClass="sidebar-button" onAction="#handleSettingsClick"/>
+            <Button fx:id="logoutButton" text="Log out" styleClass="sidebar-button" onAction="#handleLogout"/>
         </VBox>
     </left>
 
-    <!-- Hauptinhalt -->
+    <!-- Main Content -->
     <center>
         <VBox spacing="30" alignment="TOP_CENTER" style="-fx-padding: 30;">
+            <!-- Top Bar -->
             <HBox alignment="CENTER_RIGHT" spacing="20">
-                <Button text="ADD NEW +" style="-fx-background-color: #E07945; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 30;" />
-                <Label text="Test User" />
+                <Button fx:id="addNewButton" text="ADD NEW +" onAction="#handleAddNew"
+                        style="-fx-background-color: #E07945; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 30;" />
+                <Label fx:id="userNameLabel" text="User" style="-fx-font-size: 16; -fx-font-weight: bold;" />
             </HBox>
 
-            <!-- Starred -->
-            <VBox spacing="10">
-                <Label text="⭐ Starred requests" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            <!-- Starred Section -->
+            <VBox spacing="10" alignment="TOP_LEFT" style="-fx-padding: 20 0 0 0;">
+                <Label text="⭐ Starred requests" style="-fx-font-size: 18; -fx-font-weight: bold;" />
                 <TilePane fx:id="starredBox" hgap="20" vgap="20" prefColumns="4" />
             </VBox>
 
-            <!-- Recently viewed -->
-            <VBox spacing="10">
-                <Label text="🕓 Recently viewed requests" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            <!-- Recently Viewed Section -->
+            <VBox spacing="10" alignment="TOP_LEFT" style="-fx-padding: 20 0 0 0;">
+                <Label text="🕓 Recently viewed requests" style="-fx-font-size: 18; -fx-font-weight: bold;" />
                 <TilePane fx:id="recentlyViewedBox" hgap="20" vgap="20" prefColumns="4" />
             </VBox>
         </VBox>

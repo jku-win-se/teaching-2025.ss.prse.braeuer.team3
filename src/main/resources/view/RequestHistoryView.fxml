@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      spacing="20" alignment="TOP_CENTER" style="-fx-padding: 30;">
+
+    <Label text="Request History" style="-fx-font-size: 24; -fx-font-weight: bold;" />
+
+    <TableView>
+        <columns>
+            <TableColumn text="Date" prefWidth="150"/>
+            <TableColumn text="Type" prefWidth="150"/>
+            <TableColumn text="Amount (€)" prefWidth="100"/>
+            <TableColumn text="Status" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+</VBox>
