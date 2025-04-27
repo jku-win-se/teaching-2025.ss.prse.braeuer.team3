@@ -21,7 +21,9 @@ public class Invoice {
     }
 
     public enum InvoiceStatus {
-        PENDING, APPROVED, REJECTED, FLAGGED;
+        SUBMITTED,
+        APPROVED,
+        REJECTED
     }
 
     public Invoice(String fileName, InvoiceCategory category, double amount) {
@@ -87,6 +89,15 @@ public class Invoice {
     public void setStatus(InvoiceStatus status) {
         this.status = status;
     }
+    public boolean isEditable() {
+        LocalDate today = LocalDate.now();
+        boolean sameMonth = (this.submissionDate.getMonth() == today.getMonth())
+                && (this.submissionDate.getYear() == today.getYear());
+        boolean notApproved = (this.status != InvoiceStatus.APPROVED);
+
+        return sameMonth && notApproved;
+    }
+
 
 
 }
