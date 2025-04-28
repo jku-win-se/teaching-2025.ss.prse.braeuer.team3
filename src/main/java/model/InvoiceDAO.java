@@ -98,5 +98,91 @@ public class InvoiceDAO {
             e.printStackTrace();
             return false;
         }
+
+
     }
+
+
+    // NOVA metoda: Dohvati SVE invoice (za admina)
+    public List<Invoice> findAllInvoices() {
+        List<Invoice> invoices = new ArrayList<>();
+        String query = "SELECT * FROM rechnung";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Invoice invoice = new Invoice(
+                        rs.getString("file_url"),
+                        Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
+                        rs.getDouble("amount")
+                );
+                invoice.setId(rs.getInt("id"));
+                invoice.setUserId(rs.getInt("user_id"));
+                invoice.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
+                invoice.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
+                invoices.add(invoice);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return invoices;
+    }
+
+    public boolean updateInvoiceStatus(int invoiceId, Invoice.InvoiceStatus status) {
+        String query = "UPDATE rechnung SET status = ?::rechnung_status WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, status.name());
+            stmt.setInt(2, invoiceId);
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0; // Vraća true ako je update uspio
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
+    public List<Invoice> findInvoicesByMonth(int year, int month) {
+        List<Invoice> invoices = new ArrayList<>();
+        String query = "SELECT * FROM rechnung WHERE EXTRACT(YEAR FROM upload_date) = ? AND EXTRACT(MONTH FROM upload_date) = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, year);
+            stmt.setInt(2, month);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Invoice invoice = new Invoice(
+                        rs.getString("file_url"),
+                        Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
+                        rs.getDouble("amount")
+                );
+                invoice.setId(rs.getInt("id"));
+                invoice.setUserId(rs.getInt("user_id"));
+                invoice.setDate(rs.getDate("upload_date").toLocalDate());
+                invoice.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
+                invoice.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
+                invoices.add(invoice);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return invoices;
+    }
+
+
 }

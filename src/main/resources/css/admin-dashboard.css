@@ -1,0 +1,106 @@
+/* Root Layout */
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #ffffff;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    -fx-background-color: #ffffff;
+}
+
+.sidebar-box {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555;
+    -fx-font-size: 16px;
+    -fx-pref-width: 180;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #f06931;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-background-radius: 10;
+}
+
+.sidebar-button:focused {
+    -fx-background-color: #f06931;
+    -fx-text-fill: white;
+}
+
+/* Logout Button */
+.logout-button {
+    -fx-background-color: #f06931;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-pref-width: 140;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+}
+
+.logout-button:hover {
+    -fx-background-color: #cf6e3b;
+}
+
+/* Dashboard Main Area */
+.dashboard-title {
+    -fx-font-size: 26px;
+    -fx-text-fill: #f26c2f;
+    -fx-font-weight: bold;
+}
+
+.input-field {
+    -fx-background-color: #f8f8f8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+}
+
+.main-button {
+    -fx-background-color: #f06931;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 10 20;
+    -fx-font-weight: bold;
+}
+
+.main-button:hover {
+    -fx-background-color: #cf6e3b;
+}
+
+/* Message Label */
+.message-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #f26c2f;
+    -fx-padding: 10;
+}
+
+/* Table Styles */
+.admin-table {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-background-radius: 5;
+}
+
+.admin-table .table-column-header {
+    -fx-background-color: #f26c2f;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+
+.admin-table .table-row-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
