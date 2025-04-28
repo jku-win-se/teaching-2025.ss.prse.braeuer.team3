@@ -5,12 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.control.Button;
-import javafx.scene.text.Text;
+
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Session;
 
@@ -36,7 +35,6 @@ public class UserDashboardController {
     @FXML
     public void initialize() {
         if (Session.getCurrentUser() == null) {
-            // Kein User eingeloggt -> zurück zum LoginView
             try {
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
@@ -48,7 +46,7 @@ public class UserDashboardController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return; // wichtig, damit der Rest nicht mehr ausgeführt wird
+            return;
         }
 
         // Wenn eingeloggt: Benutzername anzeigen
@@ -141,11 +139,25 @@ public class UserDashboardController {
 
     @FXML
     private void handleAddNew() {
-        switchContent("/view/AddInvoiceView.fxml");
-    }
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AddInvoiceView.fxml"));
+                Parent root = loader.load();
+
+                Stage popupStage = new Stage();
+                popupStage.setTitle("Upload Invoice");
+                popupStage.setScene(new Scene(root));
+                popupStage.setResizable(false);
+                popupStage.initModality(Modality.APPLICATION_MODAL);
+                popupStage.showAndWait();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
 
-    private void switchContent(String fxmlPath) {
+
+        private void switchContent(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent content = loader.load();

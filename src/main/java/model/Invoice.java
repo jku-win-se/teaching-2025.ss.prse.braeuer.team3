@@ -1,7 +1,6 @@
 package model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class Invoice {
     // Static counter to automatically generate unique IDs for each invoice
