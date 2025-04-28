@@ -1,102 +1,152 @@
 package model;
 
+import javafx.beans.property.*;
 import java.time.LocalDate;
 
 public class Invoice {
-    // Static counter to automatically generate unique IDs for each invoice
+
     private static int idCounter = 1;
 
-    // Unique ID for each invoice instance, set during object creation.
-    private int invoiceId;
-    private String fileName;
-    private InvoiceCategory category;
-    private double amount;
-    private LocalDate date;
-    private LocalDate submissionDate;
-    private InvoiceStatus status;
+    private IntegerProperty invoiceId = new SimpleIntegerProperty();
+    private IntegerProperty userId = new SimpleIntegerProperty();
+    private StringProperty fileName = new SimpleStringProperty();
+    private ObjectProperty<InvoiceCategory> category = new SimpleObjectProperty<>();
+    private DoubleProperty amount = new SimpleDoubleProperty();
+    private ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDate> submissionDate = new SimpleObjectProperty<>();
+    private ObjectProperty<InvoiceStatus> status = new SimpleObjectProperty<>();
+    private StringProperty email = new SimpleStringProperty();
 
     public enum InvoiceCategory {
         RESTAURANT, SUPERMARKET
     }
 
     public enum InvoiceStatus {
-        SUBMITTED,
-        APPROVED,
-        REJECTED
+        SUBMITTED, APPROVED, REJECTED
     }
 
     public Invoice(String fileName, InvoiceCategory category, double amount) {
-        this.invoiceId = idCounter++; // Automatisch eine eindeutige ID zuweisen
-        this.fileName = fileName;
-        this.category = category;
-        this.amount = amount;
+        this.invoiceId.set(idCounter++);
+        this.fileName.set(fileName);
+        this.category.set(category);
+        this.amount.set(amount);
     }
 
-
+    // --- Getters & Setters
 
     public int getId() {
+        return invoiceId.get();
+    }
+
+    public void setId(int id) {
+        this.invoiceId.set(id);
+    }
+
+    public IntegerProperty idProperty() {
         return invoiceId;
     }
 
-    public void setId(int invoiceId) {
-        this.invoiceId = invoiceId;
+    public int getUserId() {
+        return userId.get();
+    }
+
+    public void setUserId(int userId) {
+        this.userId.set(userId);
+    }
+
+    public IntegerProperty userIdProperty() {
+        return userId;
     }
 
     public String getFileName() {
-        return fileName;
+        return fileName.get();
     }
 
     public void setFileName(String fileName) {
-        this.fileName = fileName;
+        this.fileName.set(fileName);
+    }
+
+    public StringProperty fileNameProperty() {
+        return fileName;
     }
 
     public InvoiceCategory getCategory() {
+        return category.get();
+    }
+
+    public void setCategory(InvoiceCategory category) {
+        this.category.set(category);
+    }
+
+    public ObjectProperty<InvoiceCategory> categoryProperty() {
         return category;
     }
 
-    public void setCategory(InvoiceCategory type) {
-        this.category = type;
-    }
-
     public double getAmount() {
-        return amount;
+        return amount.get();
     }
 
     public void setAmount(double amount) {
-        this.amount = amount;
+        this.amount.set(amount);
+    }
+
+    public DoubleProperty amountProperty() {
+        return amount;
     }
 
     public LocalDate getDate() {
-        return date;
+        return date.get();
     }
 
     public void setDate(LocalDate date) {
-        this.date = date;
+        this.date.set(date);
+    }
+
+    public ObjectProperty<LocalDate> dateProperty() {
+        return date;
     }
 
     public LocalDate getSubmissionDate() {
-        return submissionDate;
+        return submissionDate.get();
     }
 
     public void setSubmissionDate(LocalDate submissionDate) {
-        this.submissionDate = submissionDate;
+        this.submissionDate.set(submissionDate);
+    }
+
+    public ObjectProperty<LocalDate> submissionDateProperty() {
+        return submissionDate;
     }
 
     public InvoiceStatus getStatus() {
+        return status.get();
+    }
+
+    public void setStatus(InvoiceStatus status) {
+        this.status.set(status);
+    }
+
+    public ObjectProperty<InvoiceStatus> statusProperty() {
         return status;
     }
-    public void setStatus(InvoiceStatus status) {
-        this.status = status;
+
+    public String getEmail() {
+        return email.get();
     }
+
+    public void setEmail(String email) {
+        this.email.set(email);
+    }
+
+    public StringProperty emailProperty() {
+        return email;
+    }
+
     public boolean isEditable() {
         LocalDate today = LocalDate.now();
-        boolean sameMonth = (this.submissionDate.getMonth() == today.getMonth())
-                && (this.submissionDate.getYear() == today.getYear());
-        boolean notApproved = (this.status != InvoiceStatus.APPROVED);
-
+        boolean sameMonth = (submissionDate.get().getMonth() == today.getMonth())
+                && (submissionDate.get().getYear() == today.getYear());
+        boolean notApproved = (status.get() != InvoiceStatus.APPROVED);
         return sameMonth && notApproved;
     }
-
-
-
 }

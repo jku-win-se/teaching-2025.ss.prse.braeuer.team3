@@ -1,4 +1,6 @@
-package at.jku.se.lunchify.Controller;
+package controller;
+
 
 public class InvoiceControllerTest {
+
 }

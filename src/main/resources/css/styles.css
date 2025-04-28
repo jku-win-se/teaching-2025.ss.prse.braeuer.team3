@@ -55,6 +55,61 @@
 .forgot-link {
     -fx-text-fill: #F06931;
     -fx-underline: true;
+
+    /*neu*/
+
+    .sidebar-button {
+        -fx-background-color: transparent;
+        -fx-text-fill: #555;
+        -fx-font-size: 14px;
+        -fx-alignment: CENTER_LEFT;
+        -fx-pref-width: 120;
+        -fx-padding: 10 0 10 15;
+        -fx-background-radius: 10;
+    }
+
+    .sidebar-button:hover {
+        -fx-background-color: #f0f0f0;
+        -fx-cursor: hand;
+    }
+
+    .sidebar-button:focused {
+        -fx-background-color: #e07945;
+        -fx-text-fill: white;
+    }
+
+    /* Main Buttons */
+
+    .button {
+        -fx-background-color: #e07945;
+        -fx-text-fill: white;
+        -fx-background-radius: 20;
+        -fx-padding: 10 20;
+    }
+
+    .button:hover {
+        -fx-background-color: #cf6e3b;
+    }
+
+
+
+    /* Table Styles */
+
+    .invoice-table {
+        -fx-background-color: #f9f9f9;
+        -fx-border-color: #e0e0e0;
+        -fx-border-width: 1;
+    }
+
+    .invoice-table .table-column-header {
+        -fx-background-color: #f26c2f;
+        -fx-text-fill: white;
+    }
+
+    .title {
+        -fx-font-size: 24px;
+        -fx-font-weight: bold;
+        -fx-text-fill: #f26c2f;
+        -fx-padding: 0 0 -5 0; /* minimal nach oben ziehen */
+    }
 }
-
-

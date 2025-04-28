@@ -54,4 +54,25 @@ public class UserDAO {
             return false;
         }
     }
+
+    //  NOVA metoda: Nađi email korisnika po user_id
+    public String findEmailByBenutzerId(int userId) {
+        String email = null;
+        String query = "SELECT email FROM benutzer WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                email = rs.getString("email");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return email;
+    }
 }

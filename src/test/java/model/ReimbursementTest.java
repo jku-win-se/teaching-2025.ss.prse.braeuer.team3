@@ -1,4 +1,4 @@
-package at.jku.se.lunchify.Model;
+package model;
 
 public class ReimbursementTest {
 }
