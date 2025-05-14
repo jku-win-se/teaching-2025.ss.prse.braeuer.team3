@@ -23,7 +23,7 @@
 
 
             <VBox spacing="10" styleClass="sidebar-box">
-                <Button text="⚙ Settings" styleClass="sidebar-button"/>
+                <Button text="⚙ Settings" styleClass="sidebar-button" onAction="#openReimbursementSettings"/>
             </VBox>
 
             <Button text="🔓 Log out" styleClass="logout-button" onAction="#handleLogout"/>

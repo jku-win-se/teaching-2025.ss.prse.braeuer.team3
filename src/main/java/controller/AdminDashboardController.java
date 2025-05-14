@@ -270,5 +270,18 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
-
+    @FXML
+    private void openReimbursementSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ReimbursementSettingsView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Reimbursement Settings");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            messageLabel.setText("Error opening reimbursement settings.");
+        }
+    }
 }
