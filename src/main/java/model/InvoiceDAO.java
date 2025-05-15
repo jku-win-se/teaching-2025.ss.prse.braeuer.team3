@@ -84,10 +84,13 @@ public class InvoiceDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
+            RefundConfigDAO configDAO = new RefundConfigDAO();
+            double calculatedAmount = configDAO.calculateRefundAmount(invoice.getCategory().name(), invoice.getAmount());
+
             stmt.setInt(1, userId);
             stmt.setString(2, invoice.getFileName());
             stmt.setString(3, invoice.getCategory().name().toLowerCase());
-            stmt.setDouble(4, invoice.getAmount());
+            stmt.setDouble(4, calculatedAmount);
             stmt.setDate(5, Date.valueOf(invoice.getSubmissionDate()));
             stmt.setString(6, invoice.getStatus().name().toLowerCase());
 

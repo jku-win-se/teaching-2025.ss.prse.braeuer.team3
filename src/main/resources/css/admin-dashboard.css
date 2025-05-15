@@ -16,6 +16,7 @@
     -fx-border-width: 1;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0.3, 0, 2);
 }
 
 .sidebar-button {
@@ -24,6 +25,7 @@
     -fx-font-size: 16px;
     -fx-pref-width: 180;
     -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 12;
 }
 
 .sidebar-button:hover {
@@ -31,6 +33,7 @@
     -fx-text-fill: white;
     -fx-cursor: hand;
     -fx-background-radius: 10;
+    -fx-font-weight: bold;
 }
 
 .sidebar-button:focused {
@@ -54,29 +57,33 @@
 
 /* Dashboard Main Area */
 .dashboard-title {
-    -fx-font-size: 26px;
+    -fx-font-size: 28px;
     -fx-text-fill: #f26c2f;
     -fx-font-weight: bold;
+    -fx-underline: true;
 }
 
 .input-field {
-    -fx-background-color: #f8f8f8;
-    -fx-border-color: #e0e0e0;
-    -fx-border-radius: 5;
+    -fx-background-color: #fdfdfd;
+    -fx-border-color: #d9d9d9;
+    -fx-border-radius: 8;
     -fx-padding: 10;
     -fx-font-size: 14px;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.03), 2, 0.0, 0, 1);
 }
 
 .main-button {
-    -fx-background-color: #f06931;
+    -fx-background-color: linear-gradient(to right, #f26c2f, #f0912f);
     -fx-text-fill: white;
     -fx-background-radius: 20;
     -fx-padding: 10 20;
     -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.1, 0, 1);
 }
 
 .main-button:hover {
-    -fx-background-color: #cf6e3b;
+    -fx-background-color: linear-gradient(to right, #cf6e3b, #dd8a2f);
 }
 
 /* Message Label */
@@ -104,3 +111,4 @@
 .admin-table .table-row-cell:hover {
     -fx-background-color: #f0f0f0;
 }
+

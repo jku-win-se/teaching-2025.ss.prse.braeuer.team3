@@ -57,7 +57,7 @@
     -fx-underline: true;
 
     /*neu*/
-
+}
     .sidebar-button {
         -fx-background-color: transparent;
         -fx-text-fill: #555;
@@ -110,4 +110,3 @@
         -fx-text-fill: #f26c2f;
         -fx-padding: 0 0 -5 0; /* minimal nach oben ziehen */
     }
-}
