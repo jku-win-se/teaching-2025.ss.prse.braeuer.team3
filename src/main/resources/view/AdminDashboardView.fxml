@@ -14,7 +14,7 @@
             </padding>
 
             <VBox spacing="10" styleClass="sidebar-box">
-                <Button text="️👥 Manage Users" styleClass="sidebar-button"/>
+                <Button text="️👥 Manage Users" styleClass="sidebar-button" onAction="#openUserManagement"/>
             </VBox>
 
             <VBox spacing="10" styleClass="sidebar-box">

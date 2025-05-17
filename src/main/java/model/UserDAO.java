@@ -75,4 +75,41 @@ public class UserDAO {
         }
         return email;
     }
+
+   public boolean addUser(User user) {
+        String query = "INSERT INTO benutzer (email, name, rolle, passwort) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getName());
+            stmt.setString(3, user.getRolle());
+            stmt.setString(4, BCrypt.hashpw("default123", BCrypt.gensalt())); // default lozinka
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+   public boolean deleteUserByEmail(String email) {
+        String query = "DELETE FROM benutzer WHERE email = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, email);
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
