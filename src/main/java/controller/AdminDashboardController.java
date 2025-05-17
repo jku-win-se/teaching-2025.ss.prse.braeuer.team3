@@ -25,35 +25,22 @@ import java.util.stream.Collectors;
 
 public class AdminDashboardController {
 
-    @FXML
-    private TableView<Invoice> invoiceTable;
-    @FXML
-    private TableColumn<Invoice, String> emailColumn;
-    @FXML
-    private TableColumn<Invoice, LocalDate> dateColumn;
-    @FXML
-    private TableColumn<Invoice, Number> amountColumn;
-    @FXML
-    private TableColumn<Invoice, String> classificationColumn;
-    @FXML
-    private TableColumn<Invoice, String> statusColumn;
+    @FXML private TableView<Invoice> invoiceTable;
+    @FXML private TableColumn<Invoice, String> emailColumn;
+    @FXML private TableColumn<Invoice, LocalDate> dateColumn;
+    @FXML private TableColumn<Invoice, Number> invoiceAmountColumn;
+    @FXML private TableColumn<Invoice, Number> reimbursementAmountColumn;
+    @FXML private TableColumn<Invoice, String> classificationColumn;
+    @FXML private TableColumn<Invoice, String> statusColumn;
 
-    @FXML
-    private TextField searchEmailField;
-    @FXML
-    private ChoiceBox<String> classificationFilter;
-    @FXML
-    private DatePicker monthPicker;
-    @FXML
-    private Button deleteButton;
-    @FXML
-    private Button rejectButton;
-    @FXML
-    private Button exportCSVButton;
-    @FXML
-    private Button exportPayrollButton;
-    @FXML
-    private Label messageLabel;
+    @FXML private TextField searchEmailField;
+    @FXML private ChoiceBox<String> classificationFilter;
+    @FXML private DatePicker monthPicker;
+    @FXML private Button deleteButton;
+    @FXML private Button rejectButton;
+    @FXML private Button exportCSVButton;
+    @FXML private Button exportPayrollButton;
+    @FXML private Label messageLabel;
 
     private InvoiceDAO invoiceDAO = new InvoiceDAO();
     private UserDAO userDAO = new UserDAO();
@@ -78,7 +65,8 @@ public class AdminDashboardController {
     private void setupTable() {
         emailColumn.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
         dateColumn.setCellValueFactory(cellData -> cellData.getValue().submissionDateProperty());
-        amountColumn.setCellValueFactory(cellData -> cellData.getValue().amountProperty());
+        invoiceAmountColumn.setCellValueFactory(cellData -> cellData.getValue().invoiceAmountProperty());
+        reimbursementAmountColumn.setCellValueFactory(cellData -> cellData.getValue().reimbursementAmountProperty());
         classificationColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
                 cellData.getValue().getCategory().toString()));
         statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
@@ -124,11 +112,10 @@ public class AdminDashboardController {
 
     @FXML
     private void rejectInvoice() {
-        Invoice selectedInvoice = invoiceTable.getSelectionModel().getSelectedItem();
-        if (selectedInvoice != null) {
-            if (selectedInvoice.getStatus() == Invoice.InvoiceStatus.SUBMITTED) {
-                boolean success = invoiceDAO.updateInvoiceStatus(selectedInvoice.getId(), Invoice.InvoiceStatus.REJECTED);
-
+        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            if (selected.getStatus() == Invoice.InvoiceStatus.SUBMITTED) {
+                boolean success = invoiceDAO.updateInvoiceStatus(selected.getId(), Invoice.InvoiceStatus.REJECTED);
                 if (success) {
                     loadInvoices();
                     messageLabel.setText("Invoice rejected successfully.");
@@ -143,22 +130,24 @@ public class AdminDashboardController {
         }
     }
 
-
     @FXML
     private void editInvoice() {
-        Invoice selectedInvoice = invoiceTable.getSelectionModel().getSelectedItem();
-        if (selectedInvoice != null) {
-            TextInputDialog dialog = new TextInputDialog(String.valueOf(selectedInvoice.getAmount()));
+        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            TextInputDialog dialog = new TextInputDialog(String.valueOf(selected.getInvoiceAmount()));
             dialog.setTitle("Edit Invoice");
-            dialog.setHeaderText("Edit amount for invoice:");
+            dialog.setHeaderText("Edit invoice amount:");
             dialog.setContentText("New amount:");
 
             dialog.showAndWait().ifPresent(newAmountStr -> {
                 try {
                     double newAmount = Double.parseDouble(newAmountStr);
-                    selectedInvoice.setAmount(newAmount);
+                    selected.setInvoiceAmount(newAmount);
+                    selected.setReimbursementAmount( // recalc on edit
+                            Math.min(newAmount, selected.getCategory() == Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5)
+                    );
 
-                    boolean success = invoiceDAO.updateInvoice(selectedInvoice);
+                    boolean success = invoiceDAO.updateInvoice(selected);
                     if (success) {
                         loadInvoices();
                         messageLabel.setText("Invoice updated successfully.");
@@ -183,11 +172,12 @@ public class AdminDashboardController {
 
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
-                writer.write("Email,Date,Amount,Classification,Status\n");
+                writer.write("Email,Date,Invoice Amount,Reimbursement,Classification,Status\n");
                 for (Invoice invoice : invoiceTable.getItems()) {
                     writer.write(invoice.getEmail() + "," +
                             invoice.getSubmissionDate() + "," +
-                            invoice.getAmount() + "," +
+                            invoice.getInvoiceAmount() + "," +
+                            invoice.getReimbursementAmount() + "," +
                             invoice.getCategory() + "," +
                             invoice.getStatus() + "\n");
                 }
@@ -214,12 +204,9 @@ public class AdminDashboardController {
                     Invoice invoice = items.get(i);
                     writer.write("  {\n");
                     writer.write("    \"email\": \"" + invoice.getEmail() + "\",\n");
-                    writer.write("    \"amount\": " + invoice.getAmount() + "\n");
-                    if (i < items.size() - 1) {
-                        writer.write("  },\n");
-                    } else {
-                        writer.write("  }\n");
-                    }
+                    writer.write("    \"invoiceAmount\": " + invoice.getInvoiceAmount() + ",\n");
+                    writer.write("    \"reimbursementAmount\": " + invoice.getReimbursementAmount() + "\n");
+                    if (i < items.size() - 1) writer.write("  },\n"); else writer.write("  }\n");
                 }
                 writer.write("]\n");
                 messageLabel.setText("Exported Payroll JSON successfully.");
@@ -243,7 +230,8 @@ public class AdminDashboardController {
                 for (Invoice invoice : invoiceTable.getItems()) {
                     writer.write("  <Employee>\n");
                     writer.write("    <Email>" + invoice.getEmail() + "</Email>\n");
-                    writer.write("    <Amount>" + invoice.getAmount() + "</Amount>\n");
+                    writer.write("    <InvoiceAmount>" + invoice.getInvoiceAmount() + "</InvoiceAmount>\n");
+                    writer.write("    <ReimbursementAmount>" + invoice.getReimbursementAmount() + "</ReimbursementAmount>\n");
                     writer.write("  </Employee>\n");
                 }
                 writer.write("</Payroll>\n");
@@ -258,10 +246,8 @@ public class AdminDashboardController {
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
-            // Učitaj login ekran
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
             Parent root = loader.load();
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -270,6 +256,7 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void openReimbursementSettings() {
         try {
@@ -284,19 +271,4 @@ public class AdminDashboardController {
             messageLabel.setText("Error opening reimbursement settings.");
         }
     }
-
-    @FXML
-    private void openUserManagement() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserManagementView.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("User Management");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

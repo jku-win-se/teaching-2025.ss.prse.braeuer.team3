@@ -11,7 +11,8 @@ public class Invoice {
     private IntegerProperty userId = new SimpleIntegerProperty();
     private StringProperty fileName = new SimpleStringProperty();
     private ObjectProperty<InvoiceCategory> category = new SimpleObjectProperty<>();
-    private DoubleProperty amount = new SimpleDoubleProperty();
+    private DoubleProperty invoiceAmount = new SimpleDoubleProperty();       // formerly amount
+    private DoubleProperty reimbursementAmount = new SimpleDoubleProperty(); // new field
     private ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
     private ObjectProperty<LocalDate> submissionDate = new SimpleObjectProperty<>();
     private ObjectProperty<InvoiceStatus> status = new SimpleObjectProperty<>();
@@ -25,14 +26,41 @@ public class Invoice {
         SUBMITTED, APPROVED, REJECTED
     }
 
-    public Invoice(String fileName, InvoiceCategory category, double amount) {
+    public Invoice(String fileName, InvoiceCategory category, double invoiceAmount) {
         this.invoiceId.set(idCounter++);
         this.fileName.set(fileName);
         this.category.set(category);
-        this.amount.set(amount);
+        this.invoiceAmount.set(invoiceAmount);
+        this.reimbursementAmount.set(0.0);
     }
 
-    // --- Getters & Setters
+    // --- Getters & Setters for new fields ---
+
+    public double getInvoiceAmount() {
+        return invoiceAmount.get();
+    }
+
+    public void setInvoiceAmount(double invoiceAmount) {
+        this.invoiceAmount.set(invoiceAmount);
+    }
+
+    public DoubleProperty invoiceAmountProperty() {
+        return invoiceAmount;
+    }
+
+    public double getReimbursementAmount() {
+        return reimbursementAmount.get();
+    }
+
+    public void setReimbursementAmount(double reimbursementAmount) {
+        this.reimbursementAmount.set(reimbursementAmount);
+    }
+
+    public DoubleProperty reimbursementAmountProperty() {
+        return reimbursementAmount;
+    }
+
+    // --- Existing Getters & Setters ---
 
     public int getId() {
         return invoiceId.get();
@@ -80,18 +108,6 @@ public class Invoice {
 
     public ObjectProperty<InvoiceCategory> categoryProperty() {
         return category;
-    }
-
-    public double getAmount() {
-        return amount.get();
-    }
-
-    public void setAmount(double amount) {
-        this.amount.set(amount);
-    }
-
-    public DoubleProperty amountProperty() {
-        return amount;
     }
 
     public LocalDate getDate() {
