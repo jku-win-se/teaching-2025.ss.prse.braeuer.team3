@@ -1,6 +1,7 @@
 package model;
 
 import util.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,18 @@ public class InvoiceDAO {
     public static List<Invoice> getAllInvoicesByUser(int userId) {
         List<Invoice> invoices = new ArrayList<>();
 
-        String query = "SELECT * FROM rechnung WHERE user_id = ? ORDER BY upload_date DESC";
+        String query = """
+            SELECT id,
+                   file_url,
+                   type,
+                   invoice_amount,
+                   reimbursement_amount,
+                   status,
+                   upload_date
+              FROM rechnung
+             WHERE user_id = ?
+          ORDER BY upload_date DESC
+            """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -22,8 +34,9 @@ public class InvoiceDAO {
                 Invoice invoice = new Invoice(
                         rs.getString("file_url"),
                         Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
-                        rs.getDouble("amount")
+                        rs.getDouble("invoice_amount")
                 );
+                invoice.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
                 invoice.setId(rs.getInt("id"));
                 invoice.setDate(rs.getDate("upload_date").toLocalDate());
                 invoice.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
@@ -39,19 +52,24 @@ public class InvoiceDAO {
         return invoices;
     }
 
-    // 🛠 Neue Methode: Update einer Rechnung (nur Kategorie und Betrag z.B.)
     public static boolean updateInvoice(Invoice invoice) {
-        String query = "UPDATE rechnung SET type = ?, amount = ? WHERE id = ?";
+        String query = """
+            UPDATE rechnung
+               SET type = ?,
+                   invoice_amount = ?,
+                   reimbursement_amount = ?
+             WHERE id = ?
+            """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, invoice.getCategory().name().toLowerCase());
-            stmt.setDouble(2, invoice.getAmount());
-            stmt.setInt(3, invoice.getId());
+            stmt.setDouble(2, invoice.getInvoiceAmount());
+            stmt.setDouble(3, invoice.getReimbursementAmount());
+            stmt.setInt(4, invoice.getId());
 
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,7 +77,6 @@ public class InvoiceDAO {
         }
     }
 
-    // 🗑 Neue Methode: Löschen einer Rechnung
     public static boolean deleteInvoice(int invoiceId) {
         String query = "DELETE FROM rechnung WHERE id = ?";
 
@@ -67,9 +84,7 @@ public class InvoiceDAO {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, invoiceId);
-
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,9 +92,12 @@ public class InvoiceDAO {
         }
     }
 
-    // ➕ Neue Methode: Neue Rechnung hinzufügen
     public static boolean addInvoice(Invoice invoice, int userId) {
-        String query = "INSERT INTO rechnung (user_id, file_url, type, amount, upload_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = """
+            INSERT INTO rechnung
+                (user_id, file_url, type, invoice_amount, reimbursement_amount, upload_date, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -87,26 +105,33 @@ public class InvoiceDAO {
             stmt.setInt(1, userId);
             stmt.setString(2, invoice.getFileName());
             stmt.setString(3, invoice.getCategory().name().toLowerCase());
-            stmt.setDouble(4, invoice.getAmount());
-            stmt.setDate(5, Date.valueOf(invoice.getSubmissionDate()));
-            stmt.setString(6, invoice.getStatus().name().toLowerCase());
+            stmt.setDouble(4, invoice.getInvoiceAmount());
+            stmt.setDouble(5, invoice.getReimbursementAmount());
+            stmt.setDate(6, Date.valueOf(invoice.getSubmissionDate()));
+            stmt.setString(7, invoice.getStatus().name().toLowerCase());
 
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-
-
     }
 
-
-    // NOVA metoda: Dohvati SVE invoice (za admina)
+    /** Holt alle Invoices für den Admin (ohne WHERE) */
     public List<Invoice> findAllInvoices() {
         List<Invoice> invoices = new ArrayList<>();
-        String query = "SELECT * FROM rechnung";
+        String query = """
+            SELECT id,
+                   user_id,
+                   file_url,
+                   type,
+                   invoice_amount,
+                   reimbursement_amount,
+                   status,
+                   upload_date
+              FROM rechnung
+            """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -116,8 +141,9 @@ public class InvoiceDAO {
                 Invoice invoice = new Invoice(
                         rs.getString("file_url"),
                         Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
-                        rs.getDouble("amount")
+                        rs.getDouble("invoice_amount")
                 );
+                invoice.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
                 invoice.setId(rs.getInt("id"));
                 invoice.setUserId(rs.getInt("user_id"));
                 invoice.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
@@ -140,8 +166,7 @@ public class InvoiceDAO {
             stmt.setString(1, status.name());
             stmt.setInt(2, invoiceId);
 
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0; // Vraća true ako je update uspio
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -149,26 +174,36 @@ public class InvoiceDAO {
         }
     }
 
-
-
     public List<Invoice> findInvoicesByMonth(int year, int month) {
         List<Invoice> invoices = new ArrayList<>();
-        String query = "SELECT * FROM rechnung WHERE EXTRACT(YEAR FROM upload_date) = ? AND EXTRACT(MONTH FROM upload_date) = ?";
+        String query = """
+            SELECT id,
+                   user_id,
+                   file_url,
+                   type,
+                   invoice_amount,
+                   reimbursement_amount,
+                   status,
+                   upload_date
+              FROM rechnung
+             WHERE EXTRACT(YEAR FROM upload_date) = ?
+               AND EXTRACT(MONTH FROM upload_date) = ?
+            """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, year);
             stmt.setInt(2, month);
-
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Invoice invoice = new Invoice(
                         rs.getString("file_url"),
                         Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
-                        rs.getDouble("amount")
+                        rs.getDouble("invoice_amount")
                 );
+                invoice.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
                 invoice.setId(rs.getInt("id"));
                 invoice.setUserId(rs.getInt("user_id"));
                 invoice.setDate(rs.getDate("upload_date").toLocalDate());
@@ -183,6 +218,5 @@ public class InvoiceDAO {
 
         return invoices;
     }
-
 
 }

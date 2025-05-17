@@ -1,10 +1,11 @@
 package controller;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import model.Invoice;
 import model.InvoiceDAO;
 import model.Session;
@@ -14,23 +15,12 @@ import java.util.List;
 
 public class RequestHistoryController {
 
-    @FXML
-    private TableView<Invoice> invoiceTable;
-
-    @FXML
-    private TableColumn<Invoice, String> submissionDateColumn;
-
-    @FXML
-    private TableColumn<Invoice, String> categoryColumn;
-
-    @FXML
-    private TableColumn<Invoice, String> amountColumn;
-
-    @FXML
-    private TableColumn<Invoice, String> statusColumn;
-
-    @FXML
-    private PieChart invoicePieChart;
+    @FXML private TableView<Invoice> invoiceTable;
+    @FXML private TableColumn<Invoice, String> submissionDateColumn;
+    @FXML private TableColumn<Invoice, String> categoryColumn;
+    @FXML private TableColumn<Invoice, String> amountColumn;
+    @FXML private TableColumn<Invoice, String> statusColumn;
+    @FXML private PieChart invoicePieChart;
 
     private ObservableList<Invoice> invoiceList = FXCollections.observableArrayList();
 
@@ -41,18 +31,18 @@ public class RequestHistoryController {
     }
 
     private void setupTable() {
-        submissionDateColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getSubmissionDate().toString()
+        submissionDateColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getSubmissionDate().toString()));
+
+        amountColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                String.format("%.2f €", data.getValue().getInvoiceAmount())
         ));
-        amountColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                String.format("%.2f", data.getValue().getAmount())
-        ));
-        categoryColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getCategory().toString()
-        ));
-        statusColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                data.getValue().getStatus().toString()
-        ));
+
+        categoryColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getCategory().toString()));
+
+        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getStatus().toString()));
 
         invoiceTable.setItems(invoiceList);
     }
@@ -72,35 +62,39 @@ public class RequestHistoryController {
                 .filter(inv -> inv.getCategory() == Invoice.InvoiceCategory.SUPERMARKET)
                 .count();
 
-        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
+        invoicePieChart.setData(FXCollections.observableArrayList(
                 new PieChart.Data("Restaurant", restaurantCount),
                 new PieChart.Data("Supermarket", supermarketCount)
-        );
-        invoicePieChart.setData(pieChartData);
+        ));
     }
 
     @FXML
     private void handleEditInvoice() {
-        Invoice selectedInvoice = invoiceTable.getSelectionModel().getSelectedItem();
-
-        if (selectedInvoice != null) {
+        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
             LocalDate today = LocalDate.now();
-            boolean sameMonth = (selectedInvoice.getSubmissionDate().getMonth() == today.getMonth())
-                    && (selectedInvoice.getSubmissionDate().getYear() == today.getYear());
-            boolean notApproved = (selectedInvoice.getStatus() != Invoice.InvoiceStatus.APPROVED);
+            boolean sameMonth = (selected.getSubmissionDate().getMonth() == today.getMonth())
+                    && (selected.getSubmissionDate().getYear() == today.getYear());
+            boolean notApproved = selected.getStatus() != Invoice.InvoiceStatus.APPROVED;
 
             if (sameMonth && notApproved) {
-                TextInputDialog amountDialog = new TextInputDialog(String.valueOf(selectedInvoice.getAmount()));
+                TextInputDialog amountDialog = new TextInputDialog(
+                        String.valueOf(selected.getInvoiceAmount()));
                 amountDialog.setTitle("Edit Invoice Amount");
                 amountDialog.setHeaderText("Edit the amount of the invoice:");
                 amountDialog.setContentText("New amount:");
 
                 amountDialog.showAndWait().ifPresent(newAmount -> {
                     try {
-                        double amount = Double.parseDouble(newAmount);
-                        selectedInvoice.setAmount(amount);
+                        double amt = Double.parseDouble(newAmount);
+                        selected.setInvoiceAmount(amt);
+                        // optional: recalc reimbursement if needed
+                        selected.setReimbursementAmount(
+                                Math.min(amt,
+                                        selected.getCategory() == Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5)
+                        );
 
-                        boolean success = InvoiceDAO.updateInvoice(selectedInvoice);
+                        boolean success = InvoiceDAO.updateInvoice(selected);
                         if (success) {
                             invoiceTable.refresh();
                             updateChart();
@@ -113,7 +107,8 @@ public class RequestHistoryController {
                     }
                 });
             } else {
-                showAlert(Alert.AlertType.WARNING, "You can only edit invoices from the current month that are not approved.");
+                showAlert(Alert.AlertType.WARNING,
+                        "You can only edit invoices from the current month that are not approved.");
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Please select an invoice to edit.");
@@ -122,20 +117,20 @@ public class RequestHistoryController {
 
     @FXML
     private void deleteSelectedInvoice() {
-        Invoice selectedInvoice = invoiceTable.getSelectionModel().getSelectedItem();
-
-        if (selectedInvoice != null) {
-            if (selectedInvoice.isEditable()) {
-                boolean deleted = InvoiceDAO.deleteInvoice(selectedInvoice.getId());
+        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            if (selected.isEditable()) {
+                boolean deleted = InvoiceDAO.deleteInvoice(selected.getId());
                 if (deleted) {
                     showAlert(Alert.AlertType.INFORMATION, "Invoice deleted successfully.");
-                    loadInvoices(); // Tabelle neu laden
-                    updateChart(); // auch Diagramm aktualisieren
+                    loadInvoices();
+                    updateChart();
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Error deleting the invoice.");
                 }
             } else {
-                showAlert(Alert.AlertType.WARNING, "You cannot delete an approved invoice or one from a past month.");
+                showAlert(Alert.AlertType.WARNING,
+                        "You cannot delete an approved invoice or one from a past month.");
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Please select an invoice to delete.");
