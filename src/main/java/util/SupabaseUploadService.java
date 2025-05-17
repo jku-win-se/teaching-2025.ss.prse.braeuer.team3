@@ -54,18 +54,20 @@ public class SupabaseUploadService {
     }
 
     // 2. Eintrag in die Supabase-Datenbank machen
-    public static boolean saveInvoiceToDatabase(int userId, String fileUrl, String category, double amount) {
-        String sql = "INSERT INTO rechnung (user_id, file_url, type, amount, status, upload_date) VALUES (?, ?, ?, ?, ?, ?)";
+    public static boolean saveInvoiceToDatabase(int userId, String fileUrl, String category, double invoiceAmount, double reimbursementAmount) {
+        String sql = "INSERT INTO rechnung (user_id, file_url, type, invoice_amount, reimbursement_amount, status, upload_date) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
             stmt.setString(2, fileUrl);
-            stmt.setString(3, category.toUpperCase()); // "restaurant" → "RESTAURANT"
-            stmt.setDouble(4, amount);
-            stmt.setString(5, "SUBMITTED");
-            stmt.setObject(6, LocalDate.now());
+            stmt.setString(3, category.toUpperCase()); // z. B. "RESTAURANT"
+            stmt.setDouble(4, invoiceAmount);
+            stmt.setDouble(5, reimbursementAmount);
+            stmt.setString(6, "SUBMITTED");
+            stmt.setObject(7, LocalDate.now());
 
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
@@ -75,4 +77,5 @@ public class SupabaseUploadService {
             return false;
         }
     }
+
 }

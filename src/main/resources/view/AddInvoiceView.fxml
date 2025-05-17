@@ -22,11 +22,18 @@
         </VBox>
 
         <HBox spacing="10" alignment="CENTER">
-            <RadioButton fx:id="restaurantRadio" text="Restaurant" />
-            <RadioButton fx:id="supermarketRadio" text="Supermarket" />
+            <RadioButton fx:id="restaurantRadio" text="Restaurant"/>
+            <RadioButton fx:id="supermarketRadio" text="Supermarket"/>
         </HBox>
 
-        <TextField fx:id="amountField" promptText="Enter total amount (€)" />
+        <!-- Rechnungsbetrag -->
+        <TextField fx:id="invoiceAmountField" promptText="Enter invoice amount (€)" />
+
+        <!-- Berechneter Rückerstattungsbetrag (read-only Anzeige) -->
+        <HBox spacing="10" alignment="CENTER">
+            <Label text="Reimbursement (€):" />
+            <Label fx:id="reimbursementAmountLabel" text="-" />
+        </HBox>
 
         <Button text="Submit" onAction="#handleSubmit" styleClass="submit-button" prefWidth="150" />
     </VBox>
