@@ -61,3 +61,20 @@
     -fx-background-radius: 5;
 }
 
+.info-button:hover > .graphic {
+    -fx-opacity: 0.8;
+}
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+.info-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 2px;
+}
+.info-button:hover {
+    -fx-background-color: rgba(0, 123, 255, 0.1);
+}
+

@@ -6,11 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
@@ -24,6 +20,8 @@ import model.Session;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class RequestHistoryController {
 
@@ -34,6 +32,7 @@ public class RequestHistoryController {
     @FXML private TableColumn<Invoice, String> categoryColumn;
     @FXML private TableColumn<Invoice, String> statusColumn;
     @FXML private PieChart invoicePieChart;
+    @FXML private Button infoButton;
 
     private ObservableList<Invoice> invoiceList = FXCollections.observableArrayList();
 
@@ -41,31 +40,19 @@ public class RequestHistoryController {
     public void initialize() {
         setupTable();
         loadInvoices();
-
-        invoiceTable.setRowFactory(tv -> {
-            TableRow<Invoice> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    showInvoicePopup(row.getItem());
-                }
-            });
-            return row;
-        });
+        setupRowFactory();
+        setupInfoButton();
     }
 
     private void setupTable() {
         submissionDateColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getSubmissionDate().toString()));
-
         invoiceAmountColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.format("%.2f €", data.getValue().getInvoiceAmount())));
-
         reimbursementAmountColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.format("%.2f €", data.getValue().getReimbursementAmount())));
-
         categoryColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getCategory().toString()));
-
         statusColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getStatus().toString()));
 
@@ -74,17 +61,22 @@ public class RequestHistoryController {
 
     private void loadInvoices() {
         int userId = Session.getCurrentUser().getId();
-        List<Invoice> invoices = InvoiceDAO.getAllInvoicesByUser(userId);
-        invoiceList.setAll(invoices);
+        List<Invoice> all = InvoiceDAO.getAllInvoicesByUser(userId);
+
+        Set<Integer> starredIds = InvoiceDAO.getStarredInvoicesByUser(userId).stream()
+                .map(Invoice::getId).collect(Collectors.toSet());
+        all.forEach(inv -> inv.setStarred(starredIds.contains(inv.getId())));
+
+        invoiceList.setAll(all);
         updateChart();
     }
 
     private void updateChart() {
         long restaurantCount = invoiceList.stream()
-                .filter(inv -> inv.getCategory() == Invoice.InvoiceCategory.RESTAURANT)
+                .filter(i -> i.getCategory() == Invoice.InvoiceCategory.RESTAURANT)
                 .count();
         long supermarketCount = invoiceList.stream()
-                .filter(inv -> inv.getCategory() == Invoice.InvoiceCategory.SUPERMARKET)
+                .filter(i -> i.getCategory() == Invoice.InvoiceCategory.SUPERMARKET)
                 .count();
 
         invoicePieChart.setData(FXCollections.observableArrayList(
@@ -93,22 +85,71 @@ public class RequestHistoryController {
         ));
     }
 
-    /**
-     * Öffnet die Rechnung im Popup mit Scroll- und Zoom-Funktion
-     */
+    private void setupRowFactory() {
+        invoiceTable.setRowFactory(tv -> {
+            TableRow<Invoice> row = new TableRow<>();
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    showInvoicePopup(row.getItem());
+                }
+            });
+
+            ContextMenu cm = new ContextMenu();
+            MenuItem starItem = new MenuItem();
+            cm.getItems().add(starItem);
+
+            row.itemProperty().addListener((obs, oldInv, newInv) -> {
+                if (newInv == null) {
+                    starItem.setDisable(true);
+                } else {
+                    starItem.setDisable(false);
+                    starItem.setText(newInv.isStarred() ? "Unstar Invoice" : "Star Invoice");
+                }
+            });
+
+            starItem.setOnAction(e -> {
+                Invoice inv = row.getItem();
+                boolean now = !inv.isStarred();
+                InvoiceDAO.toggleStar(Session.getCurrentUser().getId(), inv.getId(), now);
+                inv.setStarred(now);
+            });
+
+            row.setContextMenu(cm);
+            return row;
+        });
+    }
+
+    private void setupInfoButton() {
+        infoButton.setOnAction(e -> showInfoDialog());
+    }
+
+    @FXML
+    private void showInfoDialog() {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("How does starring work?");
+        a.setHeaderText("Starring via right-click");
+        a.setContentText(
+                "• Right-click on an invoice row to open the context menu.\n \n" +
+                        "• Select “Star Invoice” to add it to your starred list (right-click again to remove).\n \n" +
+                        "• Your starred invoices appear in the STARRED tab in the dashboard."
+        );
+        a.showAndWait();
+    }
+
     private void showInvoicePopup(Invoice invoice) {
         String rawName = invoice.getFileName();
         String trimmed = rawName.replaceAll("^/+", "");
         String publicUrl = "https://onvxredsmjqlufgjjojh.supabase.co"
                 + "/storage/v1/object/public/rechnung//" + trimmed;
-        System.out.println("Loading invoice image from: " + publicUrl);
 
         Image image = new Image(publicUrl, true);
         image.errorProperty().addListener((obs, oldErr, isErr) -> {
-            if (isErr) {
-                showAlert(Alert.AlertType.ERROR, "Could not load invoice image.");
-            }
+            if (isErr) showAlert(Alert.AlertType.ERROR, "Could not load invoice image.");
         });
+        image.progressProperty().addListener((obs, oldP, newP) ->
+                System.out.printf("Image loading: %.0f%%%n", newP.doubleValue()*100)
+        );
 
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);

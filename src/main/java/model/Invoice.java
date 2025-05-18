@@ -13,6 +13,7 @@ public class Invoice {
     private ObjectProperty<InvoiceCategory> category = new SimpleObjectProperty<>();
     private DoubleProperty invoiceAmount = new SimpleDoubleProperty();       // formerly amount
     private DoubleProperty reimbursementAmount = new SimpleDoubleProperty(); // new field
+    private BooleanProperty starred = new SimpleBooleanProperty(false);     // new field
     private ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
     private ObjectProperty<LocalDate> submissionDate = new SimpleObjectProperty<>();
     private ObjectProperty<InvoiceStatus> status = new SimpleObjectProperty<>();
@@ -32,9 +33,10 @@ public class Invoice {
         this.category.set(category);
         this.invoiceAmount.set(invoiceAmount);
         this.reimbursementAmount.set(0.0);
+        this.starred.set(false);
     }
 
-    // --- Getters & Setters for new fields ---
+    // --- Invoice and Reimbursement Getters & Setters ---
 
     public double getInvoiceAmount() {
         return invoiceAmount.get();
@@ -58,6 +60,20 @@ public class Invoice {
 
     public DoubleProperty reimbursementAmountProperty() {
         return reimbursementAmount;
+    }
+
+    // --- Starred Getter & Setter ---
+
+    public boolean isStarred() {
+        return starred.get();
+    }
+
+    public void setStarred(boolean starred) {
+        this.starred.set(starred);
+    }
+
+    public BooleanProperty starredProperty() {
+        return starred;
     }
 
     // --- Existing Getters & Setters ---
