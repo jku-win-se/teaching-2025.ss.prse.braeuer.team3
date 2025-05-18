@@ -92,10 +92,10 @@
     }
     .admin-table .table-row-cell:hover {
         -fx-background-color: #f0f0f0;
+    }
     .admin-table .table-row-cell:filled:selected {
         -fx-background-color: #cce5ff;
     }
     .admin-table .table-row-cell:filled:selected:hover {
         -fx-background-color: #b2d7ff;
     }
-}

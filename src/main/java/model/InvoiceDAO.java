@@ -118,7 +118,7 @@ public class InvoiceDAO {
         }
     }
 
-    /** Holt alle Invoices für den Admin (ohne WHERE) */
+    /** Holt alle Invoices für den Admin  */
     public List<Invoice> findAllInvoices() {
         List<Invoice> invoices = new ArrayList<>();
         String query = """
@@ -218,5 +218,6 @@ public class InvoiceDAO {
 
         return invoices;
     }
+
 
 }

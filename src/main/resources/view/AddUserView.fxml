@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<?import java.lang.String?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.AddUserController"
+            prefWidth="500" prefHeight="400"
+            stylesheets="@../css/styles.css">
+
+    <VBox alignment="CENTER" spacing="25" AnchorPane.topAnchor="30.0" AnchorPane.bottomAnchor="20.0"
+          AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+
+        <Label text=" Add New User" styleClass="dashboard-title"/>
+
+        <TextField fx:id="nameField" promptText="Name" styleClass="input-field"/>
+        <TextField fx:id="emailField" promptText="Email" styleClass="input-field"/>
+
+        <ChoiceBox fx:id="roleChoiceBox" prefWidth="300" styleClass="input-field">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="admin"/>
+                    <String fx:value="user"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+
+        <Button text="Add User" onAction="#handleAddUser" styleClass="main-button" prefWidth="200" prefHeight="45"/>
+
+    </VBox>
+</AnchorPane>

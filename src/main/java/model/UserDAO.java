@@ -2,6 +2,8 @@ package model;
 
 import util.DBConnection;
 import org.mindrot.jbcrypt.BCrypt;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,7 +78,33 @@ public class UserDAO {
         return email;
     }
 
-   public boolean addUser(User user) {
+    public static List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM benutzer";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("id"),
+                        rs.getString("email"),
+                        rs.getString("passwort"),
+                        rs.getString("name"),
+                        rs.getString("rolle")
+                );
+                users.add(user);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+   public static boolean addUser(User user) {
         String query = "INSERT INTO benutzer (email, name, rolle, passwort) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
@@ -96,7 +124,7 @@ public class UserDAO {
         }
     }
 
-   public boolean deleteUserByEmail(String email) {
+   public static boolean deleteUserByEmail(String email) {
         String query = "DELETE FROM benutzer WHERE email = ?";
 
         try (Connection conn = DBConnection.getConnection();

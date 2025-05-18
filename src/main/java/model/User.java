@@ -1,18 +1,27 @@
 package model;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class User {
     private int id;
-    private String email;
+    private StringProperty email;
     private String password;
-    private String name;
-    private String rolle; // 👈 neues Feld für Benutzerrolle
+    private StringProperty name;
+    private StringProperty rolle; // 👈 neues Feld für Benutzerrolle
 
     public User(int id, String email, String password, String name, String rolle) {
         this.id = id;
-        this.email = email;
+        this.email = new SimpleStringProperty(email);
         this.password = password;
-        this.name = name;
-        this.rolle = rolle;
+        this.name = new SimpleStringProperty(name);
+        this.rolle = new SimpleStringProperty(rolle);
+    }
+
+    public User() {
+        this.name = new SimpleStringProperty();
+        this.email = new SimpleStringProperty();
+        this.rolle = new SimpleStringProperty();
     }
 
     // Getter
@@ -21,7 +30,7 @@ public class User {
     }
 
     public String getEmail() {
-        return email;
+        return email.get();
     }
 
     public String getPassword() {
@@ -29,11 +38,11 @@ public class User {
     }
 
     public String getName() {
-        return name;
+        return name.get();
     }
 
     public String getRolle() {
-        return rolle;
+        return rolle.get();
     }
 
     // Setter
@@ -42,7 +51,10 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email.set(email);
+    }
+    public StringProperty emailProperty() {
+        return email;
     }
 
     public void setPassword(String password) {
@@ -50,10 +62,15 @@ public class User {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
+    }
+    public StringProperty nameProperty() {
+        return name;
     }
 
-    public void setRolle(String rolle) {
-        this.rolle = rolle;
+
+    public void setRolle(String rolle) { this.rolle.set(rolle);}
+    public StringProperty rolleProperty() {
+        return rolle;
     }
 }
