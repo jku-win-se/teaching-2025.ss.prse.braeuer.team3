@@ -18,23 +18,15 @@ public class AddInvoiceController {
     @FXML private Label fileLabel;
     @FXML private RadioButton restaurantRadio;
     @FXML private RadioButton supermarketRadio;
+    @FXML private ToggleGroup categoryGroup;
     @FXML private TextField invoiceAmountField;
     @FXML private Label reimbursementAmountLabel;
-    @FXML private Button submitButton;
 
-    private ToggleGroup categoryGroup; // NICHT @FXML!
     private File selectedFile;
 
     @FXML
     public void initialize() {
         uploadIcon.setImage(new Image(getClass().getResourceAsStream("/images/upload_icon.png")));
-
-        // ToggleGroup initialisieren und zuweisen
-        categoryGroup = new ToggleGroup();
-        restaurantRadio.setToggleGroup(categoryGroup);
-        supermarketRadio.setToggleGroup(categoryGroup);
-
-        // Live-Update der Erstattung
         invoiceAmountField.textProperty().addListener((obs, oldVal, newVal) -> updateReimbursement());
         categoryGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> updateReimbursement());
     }
@@ -49,7 +41,6 @@ public class AddInvoiceController {
         );
 
         File file = fileChooser.showOpenDialog(chooseFileButton.getScene().getWindow());
-
         if (file != null) {
             selectedFile = file;
             fileLabel.setText(file.getName());
@@ -58,25 +49,21 @@ public class AddInvoiceController {
 
     @FXML
     private void handleSubmit() {
-        if (selectedFile == null || categoryGroup.getSelectedToggle() == null) {
+        if (selectedFile == null || (!restaurantRadio.isSelected() && !supermarketRadio.isSelected())) {
             showAlert(Alert.AlertType.WARNING, "Please select a file and a category.");
             return;
         }
-
         try {
             double invoiceAmount = Double.parseDouble(invoiceAmountField.getText());
-            String category = getSelectedCategory();
+            String category = restaurantRadio.isSelected() ? "restaurant" : "supermarket";
             int userId = Session.getCurrentUser().getId();
-
             double reimbursementAmount = calculateReimbursement(invoiceAmount, category);
 
-            // Datei zu Supabase hochladen
             String fileUrl = SupabaseUploadService.uploadFile(selectedFile, userId);
-
             if (fileUrl != null) {
                 boolean success = SupabaseUploadService.saveInvoiceToDatabase(
-                        userId, fileUrl, category, invoiceAmount, reimbursementAmount);
-
+                        userId, fileUrl, category, invoiceAmount, reimbursementAmount
+                );
                 if (success) {
                     showAlert(Alert.AlertType.INFORMATION, "Invoice uploaded and saved successfully.");
                     closeWindow();
@@ -86,7 +73,6 @@ public class AddInvoiceController {
             } else {
                 showAlert(Alert.AlertType.ERROR, "Failed to upload file to Supabase.");
             }
-
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Invalid amount entered. Please enter a valid number.");
         }
@@ -95,18 +81,12 @@ public class AddInvoiceController {
     private void updateReimbursement() {
         try {
             double invoice = Double.parseDouble(invoiceAmountField.getText());
-            String category = getSelectedCategory();
+            String category = restaurantRadio.isSelected() ? "restaurant" : supermarketRadio.isSelected() ? "supermarket" : "";
             double reimbursement = calculateReimbursement(invoice, category);
             reimbursementAmountLabel.setText(String.format("%.2f €", reimbursement));
         } catch (Exception e) {
             reimbursementAmountLabel.setText("-");
         }
-    }
-
-    private String getSelectedCategory() {
-        if (restaurantRadio.isSelected()) return "restaurant";
-        if (supermarketRadio.isSelected()) return "supermarket";
-        return "";
     }
 
     private double calculateReimbursement(double amount, String category) {
@@ -118,7 +98,8 @@ public class AddInvoiceController {
     }
 
     private void closeWindow() {
-        Stage stage = (Stage) submitButton.getScene().getWindow();
+        // Use chooseFileButton to retrieve current stage instead of submitButton
+        Stage stage = (Stage) chooseFileButton.getScene().getWindow();
         stage.close();
     }
 
