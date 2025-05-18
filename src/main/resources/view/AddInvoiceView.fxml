@@ -11,31 +11,46 @@
             styleClass="root"
             prefWidth="400" prefHeight="500">
 
+    <!-- 1) Definiere deine ToggleGroup hier, außerhalb der children -->
+    <fx:define>
+        <ToggleGroup fx:id="categoryGroup"/>
+    </fx:define>
+
     <VBox spacing="20" alignment="CENTER" layoutX="20" layoutY="20" prefWidth="360" prefHeight="460">
 
         <Label text="Upload Invoice" styleClass="upload-title"/>
 
         <VBox alignment="CENTER" spacing="10" styleClass="upload-area" prefWidth="300" prefHeight="200">
             <ImageView fx:id="uploadIcon" fitWidth="80" fitHeight="80" />
-            <Button fx:id="chooseFileButton" text="Choose a file or drag and drop" onAction="#handleChooseFile" styleClass="choose-file-button" />
+            <Button fx:id="chooseFileButton"
+                    text="Choose a file or drag and drop"
+                    onAction="#handleChooseFile"
+                    styleClass="choose-file-button" />
             <Label fx:id="fileLabel" text="No file selected" />
         </VBox>
 
+        <!-- 2) Hier nur deine RadioButtons, verknüpft mit der definierten Gruppe -->
         <HBox spacing="10" alignment="CENTER">
-            <RadioButton fx:id="restaurantRadio" text="Restaurant"/>
-            <RadioButton fx:id="supermarketRadio" text="Supermarket"/>
+            <RadioButton fx:id="restaurantRadio"
+                         text="Restaurant"
+                         toggleGroup="$categoryGroup"/>
+            <RadioButton fx:id="supermarketRadio"
+                         text="Supermarket"
+                         toggleGroup="$categoryGroup"/>
         </HBox>
 
         <!-- Rechnungsbetrag -->
         <TextField fx:id="invoiceAmountField" promptText="Enter invoice amount (€)" />
 
-        <!-- Berechneter Rückerstattungsbetrag (read-only Anzeige) -->
+        <!-- Berechneter Rückerstattungsbetrag -->
         <HBox spacing="10" alignment="CENTER">
             <Label text="Reimbursement (€):" />
             <Label fx:id="reimbursementAmountLabel" text="-" />
         </HBox>
 
-        <Button text="Submit" onAction="#handleSubmit" styleClass="submit-button" prefWidth="150" />
+        <Button text="Submit"
+                onAction="#handleSubmit"
+                styleClass="submit-button"
+                prefWidth="150" />
     </VBox>
-
 </AnchorPane>

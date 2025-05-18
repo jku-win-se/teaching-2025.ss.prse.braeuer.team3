@@ -29,14 +29,11 @@ public class RequestHistoryController {
 
     @FXML private TableView<Invoice> invoiceTable;
     @FXML private TableColumn<Invoice, String> submissionDateColumn;
+    @FXML private TableColumn<Invoice, String> invoiceAmountColumn;
+    @FXML private TableColumn<Invoice, String> reimbursementAmountColumn;
     @FXML private TableColumn<Invoice, String> categoryColumn;
-    @FXML private TableColumn<Invoice, String> amountColumn;
     @FXML private TableColumn<Invoice, String> statusColumn;
     @FXML private PieChart invoicePieChart;
-
-    // Basis-URL zu deinem Supabase-Projekt und Bucket-Name
-    private static final String SUPABASE_URL    = "https://onvxredsmjqlufgjjojh.supabase.co";
-    private static final String SUPABASE_BUCKET = "rechnung";
 
     private ObservableList<Invoice> invoiceList = FXCollections.observableArrayList();
 
@@ -45,7 +42,6 @@ public class RequestHistoryController {
         setupTable();
         loadInvoices();
 
-        // Double-Click auf Zeile öffnet das Popup
         invoiceTable.setRowFactory(tv -> {
             TableRow<Invoice> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -60,10 +56,16 @@ public class RequestHistoryController {
     private void setupTable() {
         submissionDateColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getSubmissionDate().toString()));
-        amountColumn.setCellValueFactory(data ->
+
+        invoiceAmountColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(String.format("%.2f €", data.getValue().getInvoiceAmount())));
+
+        reimbursementAmountColumn.setCellValueFactory(data ->
+                new SimpleStringProperty(String.format("%.2f €", data.getValue().getReimbursementAmount())));
+
         categoryColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getCategory().toString()));
+
         statusColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getStatus().toString()));
 
@@ -92,44 +94,31 @@ public class RequestHistoryController {
     }
 
     /**
-     * Zeigt die Rechnung in einem Popup mit Zoom- und Scroll-Funktion.
-     * Nutzt die Public-URL mit doppeltem Slash für den führenden Dateinamen.
+     * Öffnet die Rechnung im Popup mit Scroll- und Zoom-Funktion
      */
     private void showInvoicePopup(Invoice invoice) {
-        // 1. Hole und bereinige den Dateinamen (entferne alle führenden Slashes)
         String rawName = invoice.getFileName();
         String trimmed = rawName.replaceAll("^/+", "");
-        // 2. Baue URL mit genau zwei Slashes: bucket + // + filename
-        String publicUrl = SUPABASE_URL
-                + "/storage/v1/object/public/"
-                + SUPABASE_BUCKET
-                + "//"
-                + trimmed;
+        String publicUrl = "https://onvxredsmjqlufgjjojh.supabase.co"
+                + "/storage/v1/object/public/rechnung//" + trimmed;
         System.out.println("Loading invoice image from: " + publicUrl);
 
-        // 3. Lade das Bild
         Image image = new Image(publicUrl, true);
         image.errorProperty().addListener((obs, oldErr, isErr) -> {
             if (isErr) {
-                System.err.println("Image load failed: " + image.getException());
                 showAlert(Alert.AlertType.ERROR, "Could not load invoice image.");
             }
         });
-        image.progressProperty().addListener((obs, oldP, newP) ->
-                System.out.printf("Image loading: %.0f%%%n", newP.doubleValue()*100)
-        );
 
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(800);
-        // Zoom per Mausrad
         imageView.addEventFilter(ScrollEvent.SCROLL, ev -> {
             double factor = ev.getDeltaY() > 0 ? 1.1 : 0.9;
             imageView.setFitWidth(imageView.getFitWidth() * factor);
             ev.consume();
         });
 
-        // ScrollPane zum Verschieben
         ScrollPane scrollPane = new ScrollPane(imageView);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
@@ -137,12 +126,11 @@ public class RequestHistoryController {
         BorderPane pane = new BorderPane(scrollPane);
         pane.setStyle("-fx-background-color: rgba(0,0,0,0.8);");
 
-        Scene scene = new Scene(pane, 800, 600);
         Stage popup = new Stage();
         popup.initOwner(invoiceTable.getScene().getWindow());
         popup.initModality(Modality.APPLICATION_MODAL);
         popup.setTitle("Invoice Preview");
-        popup.setScene(scene);
+        popup.setScene(new Scene(pane, 800, 600));
         popup.showAndWait();
     }
 
@@ -157,8 +145,7 @@ public class RequestHistoryController {
         boolean sameMonth = sel.getSubmissionDate().getMonth() == today.getMonth()
                 && sel.getSubmissionDate().getYear() == today.getYear();
         if (!sameMonth || sel.getStatus() == Invoice.InvoiceStatus.APPROVED) {
-            showAlert(Alert.AlertType.WARNING,
-                    "Cannot edit past-month or approved invoices.");
+            showAlert(Alert.AlertType.WARNING, "Cannot edit past-month or approved invoices.");
             return;
         }
 
@@ -171,15 +158,13 @@ public class RequestHistoryController {
                 sel.setInvoiceAmount(amt);
                 sel.setReimbursementAmount(Math.min(amt,
                         sel.getCategory() == Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5));
-                boolean ok = InvoiceDAO.updateInvoice(sel);
-                if (ok) {
-                    invoiceTable.refresh();
-                    updateChart();
+                if (InvoiceDAO.updateInvoice(sel)) {
+                    invoiceTable.refresh(); updateChart();
                     showAlert(Alert.AlertType.INFORMATION, "Invoice updated.");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Update failed.");
                 }
-            } catch (NumberFormatException ex) {
+            } catch (NumberFormatException e) {
                 showAlert(Alert.AlertType.ERROR, "Invalid number.");
             }
         });
@@ -193,14 +178,11 @@ public class RequestHistoryController {
             return;
         }
         if (!sel.isEditable()) {
-            showAlert(Alert.AlertType.WARNING,
-                    "Cannot delete past-month or approved invoices.");
+            showAlert(Alert.AlertType.WARNING, "Cannot delete past-month or approved invoices.");
             return;
         }
-        boolean deleted = InvoiceDAO.deleteInvoice(sel.getId());
-        if (deleted) {
-            loadInvoices();
-            updateChart();
+        if (InvoiceDAO.deleteInvoice(sel.getId())) {
+            loadInvoices(); updateChart();
             showAlert(Alert.AlertType.INFORMATION, "Invoice deleted.");
         } else {
             showAlert(Alert.AlertType.ERROR, "Delete failed.");
@@ -208,10 +190,10 @@ public class RequestHistoryController {
     }
 
     private void showAlert(Alert.AlertType type, String msg) {
-        Alert a = new Alert(type);
-        a.setTitle("Request History");
-        a.setHeaderText(null);
-        a.setContentText(msg);
-        a.showAndWait();
+        Alert alert = new Alert(type);
+        alert.setTitle("Request History");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }

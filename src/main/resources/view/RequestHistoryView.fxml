@@ -15,10 +15,18 @@
             <!-- Tabelle der Rechnungen -->
             <TableView fx:id="invoiceTable" prefHeight="300">
                 <columns>
-                    <TableColumn fx:id="submissionDateColumn" text="Submission Date" prefWidth="150"/>
-                    <TableColumn fx:id="amountColumn" text="Amount (€)" prefWidth="100"/>
-                    <TableColumn fx:id="categoryColumn" text="Category" prefWidth="150"/>
-                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
+                    <TableColumn fx:id="submissionDateColumn"
+                                 text="Submission Date" prefWidth="150"/>
+                    <!-- NEU: Invoice Amount -->
+                    <TableColumn fx:id="invoiceAmountColumn"
+                                 text="Invoice (€)" prefWidth="120"/>
+                    <!-- NEU: Reimbursement Amount -->
+                    <TableColumn fx:id="reimbursementAmountColumn"
+                                 text="Reimbursement (€)" prefWidth="120"/>
+                    <TableColumn fx:id="categoryColumn"
+                                 text="Category" prefWidth="150"/>
+                    <TableColumn fx:id="statusColumn"
+                                 text="Status" prefWidth="100"/>
                 </columns>
             </TableView>
 
