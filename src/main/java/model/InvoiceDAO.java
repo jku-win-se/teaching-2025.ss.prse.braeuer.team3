@@ -53,29 +53,32 @@ public class InvoiceDAO {
     }
 
     public static boolean updateInvoice(Invoice invoice) {
+        // Wir casten hier den String direkt in dein Postgres-Enum rechnung_kategorie
         String query = """
-            UPDATE rechnung
-               SET type = ?,
-                   invoice_amount = ?,
-                   reimbursement_amount = ?
-             WHERE id = ?
-            """;
+        UPDATE rechnung
+           SET type   = ?::rechnung_kategorie,
+               invoice_amount = ?
+         WHERE id     = ?
+        """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, invoice.getCategory().name().toLowerCase());
+            // 1) Enum-Name als String (z.B. "RESTAURANT")
+            stmt.setString(1, invoice.getCategory().name());
+            // 2) Neuer Betrag
             stmt.setDouble(2, invoice.getInvoiceAmount());
-            stmt.setDouble(3, invoice.getReimbursementAmount());
-            stmt.setInt(4, invoice.getId());
+            // 3) ID der zu ändernden Rechnung
+            stmt.setInt(3, invoice.getId());
 
-            return stmt.executeUpdate() > 0;
-
+            int affected = stmt.executeUpdate();
+            return affected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+
 
     public static boolean deleteInvoice(int invoiceId) {
         String query = "DELETE FROM rechnung WHERE id = ?";
