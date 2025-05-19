@@ -49,7 +49,7 @@ public class AddUserController {
         user.setEmail(email);
         user.setRolle(role);
 
-        boolean success = UserDAO.addUser(user);
+        boolean success = UserDAO.addUser(name, email, role);
         if (success) {
             showAlert("User successfully added.");
             Stage stage = (Stage) nameField.getScene().getWindow();
