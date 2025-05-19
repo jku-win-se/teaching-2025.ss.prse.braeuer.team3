@@ -3,14 +3,15 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
 import javafx.geometry.Pos;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -107,22 +108,51 @@ public class UserDashboardController {
     }
 
     @FXML private void handleRequestsClick() throws IOException {
-        mainPane.setCenter(FXMLLoader.load(getClass().getResource("/view/RequestHistoryView.fxml")));
+        mainPane.setCenter(
+                FXMLLoader.load(getClass().getResource("/view/RequestHistoryView.fxml"))
+        );
     }
 
     @FXML private void handleSettingsClick() throws IOException {
-        mainPane.setCenter(FXMLLoader.load(getClass().getResource("/view/SettingsView.fxml")));
+        mainPane.setCenter(
+                FXMLLoader.load(getClass().getResource("/view/SettingsView.fxml"))
+        );
     }
 
-    @FXML private void handleLogout() throws IOException {
-        Session.clearCurrentUser();
-        Stage stage = (Stage) mainPane.getScene().getWindow();
-        stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"))));
-        stage.setTitle("Login");
-        stage.show();
+    @FXML
+    private void handleLogout() {
+        try {
+            // LoginView mit Controller und Stylesheet neu laden
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
+            Parent loginRoot = loader.load();
+
+            Scene loginScene = new Scene(loginRoot);
+            // optional: dein zentrales Stylesheet hinzufügen
+            loginScene.getStylesheets().add(
+                    getClass().getResource("/css/styles.css").toExternalForm()
+            );
+
+            Stage stage = (Stage) mainPane.getScene().getWindow();
+            stage.setScene(loginScene);
+            stage.setTitle("Login");
+            stage.setResizable(false);
+            stage.show();
+
+            // Session leeren
+            Session.clearCurrentUser();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Fallback-Meldung
+            new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.ERROR,
+                    "Konnte Login-Screen nicht laden."
+            ).showAndWait();
+        }
     }
 
-    @FXML private void handleAddNew() throws IOException {
+    @FXML
+    private void handleAddNew() throws IOException {
         Stage popup = new Stage();
         popup.initOwner(mainPane.getScene().getWindow());
         popup.initModality(Modality.APPLICATION_MODAL);

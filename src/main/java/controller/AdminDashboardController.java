@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Invoice;
 import model.InvoiceDAO;
+import model.Session;
 import model.UserDAO;
 
 import java.io.File;
@@ -46,54 +47,61 @@ public class AdminDashboardController {
     private UserDAO userDAO = new UserDAO();
     private ObservableList<Invoice> allInvoices = FXCollections.observableArrayList();
 
+    @FXML
     public void initialize() {
-        loadInvoices();
         setupTable();
         setupFilters();
-    }
-
-    private void loadInvoices() {
-        List<Invoice> invoices = invoiceDAO.findAllInvoices();
-        invoices.forEach(invoice -> {
-            String email = userDAO.findEmailByBenutzerId(invoice.getUserId());
-            invoice.setEmail(email != null ? email : "Unknown");
-        });
-        allInvoices.setAll(invoices);
-        invoiceTable.setItems(allInvoices);
+        loadInvoices();
     }
 
     private void setupTable() {
-        emailColumn.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
-        dateColumn.setCellValueFactory(cellData -> cellData.getValue().submissionDateProperty());
-        invoiceAmountColumn.setCellValueFactory(cellData -> cellData.getValue().invoiceAmountProperty());
-        reimbursementAmountColumn.setCellValueFactory(cellData -> cellData.getValue().reimbursementAmountProperty());
-        classificationColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().getCategory().toString()));
-        statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().getStatus().toString()));
+        emailColumn.setCellValueFactory(cd -> cd.getValue().emailProperty());
+        dateColumn.setCellValueFactory(cd -> cd.getValue().submissionDateProperty());
+        invoiceAmountColumn.setCellValueFactory(cd -> cd.getValue().invoiceAmountProperty());
+        reimbursementAmountColumn.setCellValueFactory(cd -> cd.getValue().reimbursementAmountProperty());
+        classificationColumn.setCellValueFactory(cd ->
+                new SimpleStringProperty(cd.getValue().getCategory().toString())
+        );
+        statusColumn.setCellValueFactory(cd ->
+                new SimpleStringProperty(cd.getValue().getStatus().toString())
+        );
     }
 
     private void setupFilters() {
         classificationFilter.getItems().addAll("Restaurant", "Supermarket", "All");
         classificationFilter.setValue("All");
 
-        searchEmailField.textProperty().addListener((observable, oldValue, newValue) -> filterInvoices());
-        classificationFilter.valueProperty().addListener((observable, oldValue, newValue) -> filterInvoices());
-        monthPicker.valueProperty().addListener((observable, oldValue, newValue) -> filterInvoices());
+        searchEmailField.textProperty()
+                .addListener((o, oldV, newV) -> filterInvoices());
+        classificationFilter.valueProperty()
+                .addListener((o, oldV, newV) -> filterInvoices());
+        monthPicker.valueProperty()
+                .addListener((o, oldV, newV) -> filterInvoices());
+    }
+
+    private void loadInvoices() {
+        List<Invoice> invoices = invoiceDAO.findAllInvoices();
+        invoices.forEach(inv -> {
+            String email = userDAO.findEmailByBenutzerId(inv.getUserId());
+            inv.setEmail(email != null ? email : "Unknown");
+        });
+        allInvoices.setAll(invoices);
+        invoiceTable.setItems(allInvoices);
     }
 
     private void filterInvoices() {
         String emailFilter = searchEmailField.getText().toLowerCase();
         String classification = classificationFilter.getValue();
-        LocalDate selectedMonth = monthPicker.getValue();
+        LocalDate month = monthPicker.getValue();
 
         List<Invoice> filtered = allInvoices.stream()
-                .filter(invoice -> invoice.getEmail().toLowerCase().contains(emailFilter))
-                .filter(invoice -> classification.equals("All") || invoice.getCategory().name().equalsIgnoreCase(classification))
-                .filter(invoice -> {
-                    if (selectedMonth == null) return true;
-                    return invoice.getSubmissionDate().getMonth().equals(selectedMonth.getMonth())
-                            && invoice.getSubmissionDate().getYear() == selectedMonth.getYear();
+                .filter(inv -> inv.getEmail().toLowerCase().contains(emailFilter))
+                .filter(inv -> classification.equals("All")
+                        || inv.getCategory().name().equalsIgnoreCase(classification))
+                .filter(inv -> {
+                    if (month == null) return true;
+                    return inv.getSubmissionDate().getMonth().equals(month.getMonth())
+                            && inv.getSubmissionDate().getYear() == month.getYear();
                 })
                 .collect(Collectors.toList());
 
@@ -102,9 +110,9 @@ public class AdminDashboardController {
 
     @FXML
     private void deleteInvoice() {
-        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            invoiceDAO.deleteInvoice(selected.getId());
+        Invoice sel = invoiceTable.getSelectionModel().getSelectedItem();
+        if (sel != null) {
+            invoiceDAO.deleteInvoice(sel.getId());
             loadInvoices();
             messageLabel.setText("Invoice deleted.");
         }
@@ -112,179 +120,173 @@ public class AdminDashboardController {
 
     @FXML
     private void rejectInvoice() {
-        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            if (selected.getStatus() == Invoice.InvoiceStatus.SUBMITTED) {
-                boolean success = invoiceDAO.updateInvoiceStatus(selected.getId(), Invoice.InvoiceStatus.REJECTED);
-                if (success) {
-                    loadInvoices();
-                    messageLabel.setText("Invoice rejected successfully.");
-                } else {
-                    messageLabel.setText("Failed to reject invoice.");
-                }
+        Invoice sel = invoiceTable.getSelectionModel().getSelectedItem();
+        if (sel != null && sel.getStatus() == Invoice.InvoiceStatus.SUBMITTED) {
+            boolean ok = invoiceDAO.updateInvoiceStatus(sel.getId(), Invoice.InvoiceStatus.REJECTED);
+            if (ok) {
+                loadInvoices();
+                messageLabel.setText("Invoice rejected successfully.");
             } else {
-                messageLabel.setText("Cannot reject invoice. Current status is not SUBMITTED.");
+                messageLabel.setText("Failed to reject invoice.");
             }
         } else {
-            messageLabel.setText("No invoice selected.");
+            messageLabel.setText("No SUBMITTED invoice selected.");
         }
     }
 
     @FXML
     private void editInvoice() {
-        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            TextInputDialog dialog = new TextInputDialog(String.valueOf(selected.getInvoiceAmount()));
-            dialog.setTitle("Edit Invoice");
-            dialog.setHeaderText("Edit invoice amount:");
-            dialog.setContentText("New amount:");
+        Invoice sel = invoiceTable.getSelectionModel().getSelectedItem();
+        if (sel != null) {
+            TextInputDialog dlg = new TextInputDialog(String.valueOf(sel.getInvoiceAmount()));
+            dlg.setTitle("Edit Invoice");
+            dlg.setHeaderText("Edit invoice amount:");
+            dlg.setContentText("New amount:");
 
-            dialog.showAndWait().ifPresent(newAmountStr -> {
+            dlg.showAndWait().ifPresent(str -> {
                 try {
-                    double newAmount = Double.parseDouble(newAmountStr);
-                    selected.setInvoiceAmount(newAmount);
-                    selected.setReimbursementAmount( // recalc on edit
-                            Math.min(newAmount, selected.getCategory() == Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5)
+                    double amt = Double.parseDouble(str);
+                    sel.setInvoiceAmount(amt);
+                    sel.setReimbursementAmount(
+                            Math.min(amt,
+                                    sel.getCategory()== Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5)
                     );
-
-                    boolean success = invoiceDAO.updateInvoice(selected);
-                    if (success) {
+                    if (invoiceDAO.updateInvoice(sel)) {
                         loadInvoices();
                         messageLabel.setText("Invoice updated successfully.");
                     } else {
                         messageLabel.setText("Failed to update invoice.");
                     }
                 } catch (NumberFormatException e) {
-                    messageLabel.setText("Invalid amount format.");
+                    messageLabel.setText("Invalid amount.");
                 }
             });
-        } else {
-            messageLabel.setText("No invoice selected.");
         }
     }
 
     @FXML
     private void exportCSV() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save CSV File");
-        fileChooser.setInitialFileName("invoices.csv");
-        File file = fileChooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save CSV File");
+        chooser.setInitialFileName("invoices.csv");
+        File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        if (file == null) return;
 
-        if (file != null) {
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write("Email,Date,Invoice Amount,Reimbursement,Classification,Status\n");
-                for (Invoice invoice : invoiceTable.getItems()) {
-                    writer.write(invoice.getEmail() + "," +
-                            invoice.getSubmissionDate() + "," +
-                            invoice.getInvoiceAmount() + "," +
-                            invoice.getReimbursementAmount() + "," +
-                            invoice.getCategory() + "," +
-                            invoice.getStatus() + "\n");
-                }
-                messageLabel.setText("Exported CSV successfully.");
-            } catch (IOException e) {
-                e.printStackTrace();
-                messageLabel.setText("Error exporting CSV.");
+        try (FileWriter w = new FileWriter(file)) {
+            w.write("Email,Date,Invoice Amount,Reimbursement,Classification,Status\n");
+            for (Invoice inv : invoiceTable.getItems()) {
+                w.write(String.join(",",
+                        inv.getEmail(),
+                        inv.getSubmissionDate().toString(),
+                        String.valueOf(inv.getInvoiceAmount()),
+                        String.valueOf(inv.getReimbursementAmount()),
+                        inv.getCategory().toString(),
+                        inv.getStatus().toString()
+                ) + "\n");
             }
+            messageLabel.setText("Exported CSV successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            messageLabel.setText("Error exporting CSV.");
         }
     }
 
     @FXML
     private void exportPayrollJSON() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Payroll JSON");
-        fileChooser.setInitialFileName("payroll.json");
-        File file = fileChooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Payroll JSON");
+        chooser.setInitialFileName("payroll.json");
+        File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        if (file == null) return;
 
-        if (file != null) {
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write("[\n");
-                List<Invoice> items = invoiceTable.getItems();
-                for (int i = 0; i < items.size(); i++) {
-                    Invoice invoice = items.get(i);
-                    writer.write("  {\n");
-                    writer.write("    \"email\": \"" + invoice.getEmail() + "\",\n");
-                    writer.write("    \"invoiceAmount\": " + invoice.getInvoiceAmount() + ",\n");
-                    writer.write("    \"reimbursementAmount\": " + invoice.getReimbursementAmount() + "\n");
-                    if (i < items.size() - 1) writer.write("  },\n"); else writer.write("  }\n");
-                }
-                writer.write("]\n");
-                messageLabel.setText("Exported Payroll JSON successfully.");
-            } catch (IOException e) {
-                e.printStackTrace();
-                messageLabel.setText("Error exporting Payroll JSON.");
+        try (FileWriter w = new FileWriter(file)) {
+            w.write("[\n");
+            var items = invoiceTable.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                Invoice inv = items.get(i);
+                w.write("  {\n");
+                w.write("    \"email\": \"" + inv.getEmail() + "\",\n");
+                w.write("    \"invoiceAmount\": " + inv.getInvoiceAmount() + ",\n");
+                w.write("    \"reimbursementAmount\": " + inv.getReimbursementAmount() + "\n");
+                w.write(i < items.size()-1 ? "  },\n" : "  }\n");
             }
+            w.write("]\n");
+            messageLabel.setText("Exported Payroll JSON successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            messageLabel.setText("Error exporting Payroll JSON.");
         }
     }
 
     @FXML
     private void exportPayrollXML() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Payroll XML");
-        fileChooser.setInitialFileName("payroll.xml");
-        File file = fileChooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Payroll XML");
+        chooser.setInitialFileName("payroll.xml");
+        File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        if (file == null) return;
 
-        if (file != null) {
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write("<Payroll>\n");
-                for (Invoice invoice : invoiceTable.getItems()) {
-                    writer.write("  <Employee>\n");
-                    writer.write("    <Email>" + invoice.getEmail() + "</Email>\n");
-                    writer.write("    <InvoiceAmount>" + invoice.getInvoiceAmount() + "</InvoiceAmount>\n");
-                    writer.write("    <ReimbursementAmount>" + invoice.getReimbursementAmount() + "</ReimbursementAmount>\n");
-                    writer.write("  </Employee>\n");
-                }
-                writer.write("</Payroll>\n");
-                messageLabel.setText("Exported Payroll XML successfully.");
-            } catch (IOException e) {
-                e.printStackTrace();
-                messageLabel.setText("Error exporting Payroll XML.");
+        try (FileWriter w = new FileWriter(file)) {
+            w.write("<Payroll>\n");
+            for (Invoice inv : invoiceTable.getItems()) {
+                w.write("  <Employee>\n");
+                w.write("    <Email>" + inv.getEmail() + "</Email>\n");
+                w.write("    <InvoiceAmount>" + inv.getInvoiceAmount() + "</InvoiceAmount>\n");
+                w.write("    <ReimbursementAmount>" + inv.getReimbursementAmount() + "</ReimbursementAmount>\n");
+                w.write("  </Employee>\n");
             }
+            w.write("</Payroll>\n");
+            messageLabel.setText("Exported Payroll XML successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            messageLabel.setText("Error exporting Payroll XML.");
         }
     }
 
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
+            // Lade LoginView komplett neu
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Parent loginRoot = loader.load();
+
+            Scene scene = new Scene(loginRoot);
+            scene.getStylesheets().add(
+                    getClass().getResource("/css/styles.css").toExternalForm()
+            );
+
+            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage.setScene(scene);
+            stage.setTitle("Login");
+            stage.setResizable(false);
             stage.show();
+
+            // Session löschen
+            Session.clearCurrentUser();
+
         } catch (IOException e) {
             e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,
+                    "Could not load login screen."
+            ).showAndWait();
         }
     }
 
     @FXML
-    private void openReimbursementSettings() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ReimbursementSettingsView.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Reimbursement Settings");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            messageLabel.setText("Error opening reimbursement settings.");
-        }
+    private void openReimbursementSettings() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view/ReimbursementSettingsView.fxml"));
+        Stage st = new Stage();
+        st.setTitle("Reimbursement Settings");
+        st.setScene(new Scene(root));
+        st.show();
     }
+
     @FXML
-    private void openUserManagement() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserManagementView.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("User Management");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void openUserManagement() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view/UserManagementView.fxml"));
+        Stage st = new Stage();
+        st.setTitle("User Management");
+        st.setScene(new Scene(root));
+        st.show();
     }
-
-
-
 }

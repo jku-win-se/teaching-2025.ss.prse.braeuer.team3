@@ -112,16 +112,16 @@ public class UserDAO {
     public static boolean addUser(String name, String email, String role) {
         String defaultHash = BCrypt.hashpw("default123", BCrypt.gensalt());
         String sql = """
-            INSERT INTO benutzer(name, email, rolle, passwort, must_change_password)
-            VALUES (?, ?, ?::benutzer_rolle, ?, TRUE)
-        """;
+        INSERT INTO benutzer(name, email, rolle, passwort, must_change_password)
+        VALUES (?, ?, ?, ?, TRUE)
+    """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setString(1, name);
             st.setString(2, email);
-            st.setString(3, role);
+            st.setString(3, role);          // kein ::benutzer_rolle mehr
             st.setString(4, defaultHash);
             return st.executeUpdate() == 1;
 
