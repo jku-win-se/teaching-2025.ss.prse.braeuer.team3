@@ -2,6 +2,8 @@ package model;
 
 import util.DBConnection;
 import org.mindrot.jbcrypt.BCrypt;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -75,4 +77,67 @@ public class UserDAO {
         }
         return email;
     }
+
+    public static List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM benutzer";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("id"),
+                        rs.getString("email"),
+                        rs.getString("passwort"),
+                        rs.getString("name"),
+                        rs.getString("rolle")
+                );
+                users.add(user);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+   public static boolean addUser(User user) {
+        String query = "INSERT INTO benutzer (email, name, rolle, passwort) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getName());
+            stmt.setString(3, user.getRolle());
+            stmt.setString(4, BCrypt.hashpw("default123", BCrypt.gensalt())); // default lozinka
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+   public static boolean deleteUserByEmail(String email) {
+        String query = "DELETE FROM benutzer WHERE email = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, email);
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

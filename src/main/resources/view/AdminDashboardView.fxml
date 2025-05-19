@@ -14,7 +14,7 @@
             </padding>
 
             <VBox spacing="10" styleClass="sidebar-box">
-                <Button text="👥 Manage Users" styleClass="sidebar-button"/>
+                <Button text="👥 Manage Users" styleClass="sidebar-button" onAction="#openUserManagement"/>
             </VBox>
 
             <VBox spacing="10" styleClass="sidebar-box">
@@ -37,7 +37,6 @@
                 <Insets top="30" right="30" bottom="30" left="30"/>
             </padding>
 
-            <!-- Dashboard Title -->
             <Label text="📊 Admin Dashboard" styleClass="dashboard-title"/>
 
             <!-- Search and Filter Section -->
@@ -47,7 +46,6 @@
                 <DatePicker fx:id="monthPicker" promptText="Select Month" styleClass="input-field"/>
             </HBox>
 
-            <!-- Action Buttons Section -->
             <HBox spacing="10" alignment="CENTER">
                 <Button text="Delete Invoice" fx:id="deleteButton" onAction="#deleteInvoice" styleClass="main-button"/>
                 <Button text="Reject Invoice" fx:id="rejectButton" onAction="#rejectInvoice" styleClass="main-button"/>
@@ -57,7 +55,6 @@
                 <Button text="Edit Invoice" fx:id="editButton" onAction="#editInvoice" styleClass="main-button"/>
             </HBox>
 
-            <!-- Message Label -->
             <Label fx:id="messageLabel" styleClass="message-label"/>
 
             <!-- Invoice Table -->

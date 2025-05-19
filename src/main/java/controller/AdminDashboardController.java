@@ -271,4 +271,20 @@ public class AdminDashboardController {
             messageLabel.setText("Error opening reimbursement settings.");
         }
     }
+    @FXML
+    private void openUserManagement() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserManagementView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("User Management");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
