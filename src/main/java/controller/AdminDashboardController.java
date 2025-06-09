@@ -25,6 +25,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
 
 public class AdminDashboardController {
 
@@ -176,7 +182,7 @@ public class AdminDashboardController {
         try (FileWriter w = new FileWriter(file)) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            w.write("\"Email\";\"Date\";\"Invoice Amount\";\"Reimbursement\";\"Classification\";\"Status\"\n");
+            w.write("\"User Email\";\"Date\";\"Invoice Amount\";\"Reimbursement\";\"Classification\";\"Status\"\n");
 
             for (Invoice inv : invoiceTable.getItems()) {
                 w.write(String.join(";",
@@ -195,6 +201,56 @@ public class AdminDashboardController {
             messageLabel.setText("Error exporting CSV.");
         }
     }
+
+    @FXML
+    private void exportPayrollPDF() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save PDF File");
+        chooser.setInitialFileName("invoices.pdf");
+        File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        if (file == null) return;
+
+        try {
+            PdfWriter writer = new PdfWriter(file);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            Paragraph title = new Paragraph("Invoice Export")
+                    .setFontSize(16)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(title);
+            document.add(new Paragraph("\n"));
+
+            Table table = new Table(6);
+            table.addCell("User Email");
+            table.addCell("Date");
+            table.addCell("Invoice Amount");
+            table.addCell("Reimbursement");
+            table.addCell("Classification");
+            table.addCell("Status");
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            for (Invoice inv : invoiceTable.getItems()) {
+                table.addCell(inv.getEmail());
+                table.addCell(inv.getSubmissionDate().format(formatter));
+                table.addCell(String.format("%.2f", inv.getInvoiceAmount()).replace(".", ","));
+                table.addCell(String.format("%.2f", inv.getReimbursementAmount()).replace(".", ","));
+                table.addCell(inv.getCategory().toString());
+                table.addCell(inv.getStatus().toString());
+            }
+
+            document.add(table);
+            document.close();
+            messageLabel.setText("Exported PDF successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            messageLabel.setText("Error exporting PDF.");
+        }
+    }
+
+
     @FXML
     private void exportPayrollJSON() {
         FileChooser chooser = new FileChooser();
