@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class AdminDashboardController {
@@ -163,7 +165,6 @@ public class AdminDashboardController {
             });
         }
     }
-
     @FXML
     private void exportCSV() {
         FileChooser chooser = new FileChooser();
@@ -173,24 +174,27 @@ public class AdminDashboardController {
         if (file == null) return;
 
         try (FileWriter w = new FileWriter(file)) {
-            w.write("Email,Date,Invoice Amount,Reimbursement,Classification,Status\n");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            w.write("\"Email\";\"Date\";\"Invoice Amount\";\"Reimbursement\";\"Classification\";\"Status\"\n");
+
             for (Invoice inv : invoiceTable.getItems()) {
-                w.write(String.join(",",
-                        inv.getEmail(),
-                        inv.getSubmissionDate().toString(),
-                        String.valueOf(inv.getInvoiceAmount()),
-                        String.valueOf(inv.getReimbursementAmount()),
-                        inv.getCategory().toString(),
-                        inv.getStatus().toString()
+                w.write(String.join(";",
+                        "\"" + inv.getEmail() + "\"",
+                        "\"" + inv.getSubmissionDate().format(formatter) + "\"",
+                        "\"" + String.format("%.2f", inv.getInvoiceAmount()).replace(".", ",") + "\"",
+                        "\"" + String.format("%.2f", inv.getReimbursementAmount()).replace(".", ",") + "\"",
+                        "\"" + inv.getCategory().toString() + "\"",
+                        "\"" + inv.getStatus().toString() + "\""
                 ) + "\n");
             }
+
             messageLabel.setText("Exported CSV successfully.");
         } catch (IOException e) {
             e.printStackTrace();
             messageLabel.setText("Error exporting CSV.");
         }
     }
-
     @FXML
     private void exportPayrollJSON() {
         FileChooser chooser = new FileChooser();
