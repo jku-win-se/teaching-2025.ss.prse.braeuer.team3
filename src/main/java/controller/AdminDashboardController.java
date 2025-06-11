@@ -22,8 +22,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -249,8 +251,6 @@ public class AdminDashboardController {
             messageLabel.setText("Error exporting PDF.");
         }
     }
-
-
     @FXML
     private void exportPayrollJSON() {
         FileChooser chooser = new FileChooser();
@@ -259,16 +259,24 @@ public class AdminDashboardController {
         File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
         if (file == null) return;
 
+        // Grupisanje i sumiranje po korisniku
+        Map<String, double[]> userSums = new HashMap<>();
+        for (Invoice inv : invoiceTable.getItems()) {
+            userSums.putIfAbsent(inv.getEmail(), new double[]{0, 0});
+            userSums.get(inv.getEmail())[0] += inv.getInvoiceAmount();
+            userSums.get(inv.getEmail())[1] += inv.getReimbursementAmount();
+        }
         try (FileWriter w = new FileWriter(file)) {
             w.write("[\n");
-            var items = invoiceTable.getItems();
-            for (int i = 0; i < items.size(); i++) {
-                Invoice inv = items.get(i);
+            int i = 0;
+            for (Map.Entry<String, double[]> entry : userSums.entrySet()) {
+                String email = entry.getKey();
+                double[] sums = entry.getValue();
                 w.write("  {\n");
-                w.write("    \"email\": \"" + inv.getEmail() + "\",\n");
-                w.write("    \"invoiceAmount\": " + inv.getInvoiceAmount() + ",\n");
-                w.write("    \"reimbursementAmount\": " + inv.getReimbursementAmount() + "\n");
-                w.write(i < items.size()-1 ? "  },\n" : "  }\n");
+                w.write("    \"email\": \"" + email + "\",\n");
+                w.write("    \"totalInvoiceAmount\": " + String.format("%.2f", sums[0]) + ",\n");
+                w.write("    \"totalReimbursementAmount\": " + String.format("%.2f", sums[1]) + "\n");
+                w.write(i++ < userSums.size() - 1 ? "  },\n" : "  }\n");
             }
             w.write("]\n");
             messageLabel.setText("Exported Payroll JSON successfully.");
@@ -278,6 +286,7 @@ public class AdminDashboardController {
         }
     }
 
+
     @FXML
     private void exportPayrollXML() {
         FileChooser chooser = new FileChooser();
@@ -286,13 +295,22 @@ public class AdminDashboardController {
         File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
         if (file == null) return;
 
+        // Grupisanje po korisniku (kao u JSON verziji)
+        Map<String, double[]> userSums = new HashMap<>();
+        for (Invoice inv : invoiceTable.getItems()) {
+            userSums.putIfAbsent(inv.getEmail(), new double[]{0, 0});
+            userSums.get(inv.getEmail())[0] += inv.getInvoiceAmount();
+            userSums.get(inv.getEmail())[1] += inv.getReimbursementAmount();
+        }
         try (FileWriter w = new FileWriter(file)) {
             w.write("<Payroll>\n");
-            for (Invoice inv : invoiceTable.getItems()) {
+            for (Map.Entry<String, double[]> entry : userSums.entrySet()) {
+                String email = entry.getKey();
+                double[] sums = entry.getValue();
                 w.write("  <Employee>\n");
-                w.write("    <Email>" + inv.getEmail() + "</Email>\n");
-                w.write("    <InvoiceAmount>" + inv.getInvoiceAmount() + "</InvoiceAmount>\n");
-                w.write("    <ReimbursementAmount>" + inv.getReimbursementAmount() + "</ReimbursementAmount>\n");
+                w.write("    <Email>" + email + "</Email>\n");
+                w.write("    <TotalInvoiceAmount>" + String.format("%.2f", sums[0]).replace(".", ",") + "</TotalInvoiceAmount>\n");
+                w.write("    <TotalReimbursementAmount>" + String.format("%.2f", sums[1]).replace(".", ",") + "</TotalReimbursementAmount>\n");
                 w.write("  </Employee>\n");
             }
             w.write("</Payroll>\n");
@@ -302,7 +320,6 @@ public class AdminDashboardController {
             messageLabel.setText("Error exporting Payroll XML.");
         }
     }
-
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
