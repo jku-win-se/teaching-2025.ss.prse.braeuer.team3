@@ -12,10 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.Invoice;
-import model.InvoiceDAO;
-import model.Session;
-import model.UserDAO;
+import model.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -120,47 +117,68 @@ public class AdminDashboardController {
 
     @FXML
     private void rejectInvoice() {
-        Invoice sel = invoiceTable.getSelectionModel().getSelectedItem();
-        if (sel != null && sel.getStatus() == Invoice.InvoiceStatus.SUBMITTED) {
-            boolean ok = invoiceDAO.updateInvoiceStatus(sel.getId(), Invoice.InvoiceStatus.REJECTED);
-            if (ok) {
+        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
+        if (selected != null && selected.getStatus() == Invoice.InvoiceStatus.SUBMITTED) {
+            boolean success = invoiceDAO.updateInvoiceStatus(
+                    selected.getId(),
+                    Invoice.InvoiceStatus.REJECTED
+            );
+            if (success) {
+                int affectedUser = selected.getUserId();
+                String msg = "Your reimbursement request (ID " + selected.getId() + ") has been rejected.";
+                NotificationDAO.createNotification(affectedUser, msg);
+
                 loadInvoices();
                 messageLabel.setText("Invoice rejected successfully.");
             } else {
                 messageLabel.setText("Failed to reject invoice.");
             }
         } else {
-            messageLabel.setText("No SUBMITTED invoice selected.");
+            messageLabel.setText("Cannot reject invoice. Current status is not SUBMITTED.");
         }
     }
 
     @FXML
     private void editInvoice() {
-        Invoice sel = invoiceTable.getSelectionModel().getSelectedItem();
-        if (sel != null) {
-            TextInputDialog dlg = new TextInputDialog(String.valueOf(sel.getInvoiceAmount()));
-            dlg.setTitle("Edit Invoice");
-            dlg.setHeaderText("Edit invoice amount:");
-            dlg.setContentText("New amount:");
+        Invoice selected = invoiceTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            TextInputDialog dialog = new TextInputDialog(String.valueOf(selected.getInvoiceAmount()));
+            dialog.setTitle("Edit Invoice");
+            dialog.setHeaderText("Edit invoice amount:");
+            dialog.setContentText("New amount:");
 
-            dlg.showAndWait().ifPresent(str -> {
+            dialog.showAndWait().ifPresent(newAmountStr -> {
                 try {
-                    double amt = Double.parseDouble(str);
-                    sel.setInvoiceAmount(amt);
-                    sel.setReimbursementAmount(
-                            Math.min(amt,
-                                    sel.getCategory()== Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5)
+                    double newAmount = Double.parseDouble(newAmountStr);
+                    selected.setInvoiceAmount(newAmount);
+                    selected.setReimbursementAmount(
+                            Math.min(newAmount,
+                                    selected.getCategory() == Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5)
                     );
-                    if (invoiceDAO.updateInvoice(sel)) {
+
+                    // Zuerst aktualisieren:
+                    boolean success = invoiceDAO.updateInvoice(selected);
+                    if (success) {
+                        // Dann den neuen Status 'edited' setzen:
+                        invoiceDAO.updateInvoiceStatus(selected.getId(),
+                                Invoice.InvoiceStatus.EDITED);
+
+                        // Notification erzeugen:
+                        int affectedUser = selected.getUserId();
+                        String msg = "Your reimbursement request (ID " + selected.getId() + ") was edited by an administrator.";
+                        NotificationDAO.createNotification(affectedUser, msg);
+
                         loadInvoices();
-                        messageLabel.setText("Invoice updated successfully.");
+                        messageLabel.setText("Invoice edited successfully.");
                     } else {
                         messageLabel.setText("Failed to update invoice.");
                     }
                 } catch (NumberFormatException e) {
-                    messageLabel.setText("Invalid amount.");
+                    messageLabel.setText("Invalid amount format.");
                 }
             });
+        } else {
+            messageLabel.setText("No invoice selected.");
         }
     }
 
@@ -246,7 +264,6 @@ public class AdminDashboardController {
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
-            // Lade LoginView komplett neu
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
             Parent loginRoot = loader.load();
 
@@ -260,8 +277,6 @@ public class AdminDashboardController {
             stage.setTitle("Login");
             stage.setResizable(false);
             stage.show();
-
-            // Session löschen
             Session.clearCurrentUser();
 
         } catch (IOException e) {

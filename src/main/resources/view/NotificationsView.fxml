@@ -18,7 +18,9 @@
     <!-- Einfach nur die ListView -->
     <ListView fx:id="listView" prefHeight="300" prefWidth="350" />
 
-    <Button text="Close"
+    <!-- Close-Button jetzt mit fx:id -->
+    <Button fx:id="closeButton"
+            text="Close"
             onAction="#onClose"
             style="-fx-background-radius:20; -fx-padding:6 12;"/>
 </VBox>

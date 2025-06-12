@@ -15,7 +15,7 @@ import java.util.List;
 public class NotificationsController {
 
     @FXML private ListView<Notification> listView;
-    @FXML private Button onClose;
+    @FXML private Button closeButton;  // muss mit fx:id im FXML übereinstimmen
 
     @FXML
     public void initialize() {
@@ -39,10 +39,10 @@ public class NotificationsController {
         });
     }
 
-    /** Close-Button */
+    /** Schliesst das Modal-Fenster */
     @FXML
     private void onClose() {
-        Stage dlg = (Stage) onClose.getScene().getWindow();
-        dlg.close();
+        Stage dialog = (Stage) closeButton.getScene().getWindow();
+        dialog.close();
     }
 }

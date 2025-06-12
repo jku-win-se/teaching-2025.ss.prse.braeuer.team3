@@ -157,17 +157,22 @@ public class InvoiceDAO {
 
     public static boolean updateInvoice(Invoice invoice) {
         String sql = """
-            UPDATE rechnung
-               SET type           = ?::rechnung_kategorie,
-                   invoice_amount = ?
-             WHERE id             = ?
-        """;
+        UPDATE rechnung
+           SET type           = ?::rechnung_kategorie,
+               invoice_amount = ?,
+               reimbursement_amount = ?,   
+               status         = 'edited'   
+         WHERE id             = ?
+    """;
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, invoice.getCategory().name());
             stmt.setDouble(2, invoice.getInvoiceAmount());
-            stmt.setInt(3, invoice.getId());
+            stmt.setDouble(3, invoice.getReimbursementAmount());
+            stmt.setInt(4, invoice.getId());
             return stmt.executeUpdate() > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
