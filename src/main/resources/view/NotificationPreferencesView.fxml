@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.NotificationPreferencesController"
+      spacing="20" alignment="TOP_CENTER"
+      style="-fx-padding: 20; -fx-background-color: white;">
+
+    <Label text="Notification Preferences"
+           style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <VBox spacing="10" alignment="TOP_LEFT">
+        <CheckBox fx:id="cbInvoiceApproved"
+                  text="Invoice Approved"
+                  onAction="#onToggleInvoiceApproved"/>
+
+        <CheckBox fx:id="cbInvoiceRejected"
+                  text="Invoice Rejected"
+                  onAction="#onToggleInvoiceRejected"/>
+
+        <CheckBox fx:id="cbMonthlySummary"
+                  text="Monthly Summary"
+                  onAction="#onToggleMonthlySummary"/>
+    </VBox>
+
+    <!-- Feedback -->
+    <Label fx:id="lblFeedback"
+           text="Preferences updated."
+           textFill="green"
+           style="-fx-opacity: 0;"/>
+
+    <Button text="Close" onAction="#onClose"
+            style="-fx-background-radius: 20; -fx-padding: 6 12;"/>
+</VBox>
