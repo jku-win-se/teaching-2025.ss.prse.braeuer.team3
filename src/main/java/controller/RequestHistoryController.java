@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class RequestHistoryController {
 
     @FXML private TableView<Invoice> invoiceTable;
@@ -35,6 +38,9 @@ public class RequestHistoryController {
     @FXML private Button infoButton;
 
     private ObservableList<Invoice> invoiceList = FXCollections.observableArrayList();
+    private static final Logger LOGGER = Logger.getLogger(RequestHistoryController.class.getName());
+
+
 
     @FXML
     public void initialize() {
@@ -148,7 +154,7 @@ public class RequestHistoryController {
             if (isErr) showAlert(Alert.AlertType.ERROR, "Could not load invoice image.");
         });
         image.progressProperty().addListener((obs, oldP, newP) ->
-                System.out.printf("Image loading: %.0f%%%n", newP.doubleValue()*100)
+                LOGGER.info(String.format("Image loading: %.0f%%%n", newP.doubleValue()*100))
         );
 
         ImageView imageView = new ImageView(image);
