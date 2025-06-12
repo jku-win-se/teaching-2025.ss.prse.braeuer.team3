@@ -1,6 +1,7 @@
 package model;
 
 import util.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 public class InvoiceDAO {
 
     /** (Admin) Holt alle Rechnungen ohne Filter */
-    public List<Invoice> findAllInvoices() {
+    public static List<Invoice> findAllInvoices() {
         List<Invoice> invoices = new ArrayList<>();
         String sql = """
             SELECT id, user_id, file_url, type, invoice_amount, reimbursement_amount, status, upload_date
@@ -48,19 +49,20 @@ public class InvoiceDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Invoice inv = new Invoice(
-                        rs.getString("file_url"),
-                        Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
-                        rs.getDouble("invoice_amount")
-                );
-                inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
-                inv.setId(rs.getInt("id"));
-                inv.setUserId(userId);
-                inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
-                inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
-                invoices.add(inv);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Invoice inv = new Invoice(
+                            rs.getString("file_url"),
+                            Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
+                            rs.getDouble("invoice_amount")
+                    );
+                    inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
+                    inv.setId(rs.getInt("id"));
+                    inv.setUserId(userId);
+                    inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
+                    inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
+                    invoices.add(inv);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -82,19 +84,20 @@ public class InvoiceDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Invoice inv = new Invoice(
-                        rs.getString("file_url"),
-                        Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
-                        rs.getDouble("invoice_amount")
-                );
-                inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
-                inv.setId(rs.getInt("id"));
-                inv.setUserId(userId);
-                inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
-                inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
-                starred.add(inv);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Invoice inv = new Invoice(
+                            rs.getString("file_url"),
+                            Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
+                            rs.getDouble("invoice_amount")
+                    );
+                    inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
+                    inv.setId(rs.getInt("id"));
+                    inv.setUserId(userId);
+                    inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
+                    inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
+                    starred.add(inv);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -115,19 +118,20 @@ public class InvoiceDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Invoice inv = new Invoice(
-                        rs.getString("file_url"),
-                        Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
-                        rs.getDouble("invoice_amount")
-                );
-                inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
-                inv.setId(rs.getInt("id"));
-                inv.setUserId(userId);
-                inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
-                inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
-                recent.add(inv);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Invoice inv = new Invoice(
+                            rs.getString("file_url"),
+                            Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
+                            rs.getDouble("invoice_amount")
+                    );
+                    inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
+                    inv.setId(rs.getInt("id"));
+                    inv.setUserId(userId);
+                    inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
+                    inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
+                    recent.add(inv);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -153,17 +157,22 @@ public class InvoiceDAO {
 
     public static boolean updateInvoice(Invoice invoice) {
         String sql = """
-            UPDATE rechnung
-               SET type           = ?::rechnung_kategorie,
-                   invoice_amount = ?
-             WHERE id             = ?
-        """;
+        UPDATE rechnung
+           SET type           = ?::rechnung_kategorie,
+               invoice_amount = ?,
+               reimbursement_amount = ?,   
+               status         = 'edited'   
+         WHERE id             = ?
+    """;
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, invoice.getCategory().name());
             stmt.setDouble(2, invoice.getInvoiceAmount());
-            stmt.setInt(3, invoice.getId());
+            stmt.setDouble(3, invoice.getReimbursementAmount());
+            stmt.setInt(4, invoice.getId());
             return stmt.executeUpdate() > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -204,7 +213,7 @@ public class InvoiceDAO {
         }
     }
 
-    public boolean updateInvoiceStatus(int invoiceId, Invoice.InvoiceStatus status) {
+    public static boolean updateInvoiceStatus(int invoiceId, Invoice.InvoiceStatus status) {
         String sql = "UPDATE rechnung SET status = ?::rechnung_status WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -217,7 +226,7 @@ public class InvoiceDAO {
         }
     }
 
-    public List<Invoice> findInvoicesByMonth(int year, int month) {
+    public static List<Invoice> findInvoicesByMonth(int year, int month) {
         List<Invoice> invoices = new ArrayList<>();
         String sql = """
             SELECT id, user_id, file_url, type, invoice_amount, reimbursement_amount, status, upload_date
@@ -229,19 +238,20 @@ public class InvoiceDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, year);
             stmt.setInt(2, month);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Invoice inv = new Invoice(
-                        rs.getString("file_url"),
-                        Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
-                        rs.getDouble("invoice_amount")
-                );
-                inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
-                inv.setId(rs.getInt("id"));
-                inv.setUserId(rs.getInt("user_id"));
-                inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
-                inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
-                invoices.add(inv);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Invoice inv = new Invoice(
+                            rs.getString("file_url"),
+                            Invoice.InvoiceCategory.valueOf(rs.getString("type").toUpperCase()),
+                            rs.getDouble("invoice_amount")
+                    );
+                    inv.setReimbursementAmount(rs.getDouble("reimbursement_amount"));
+                    inv.setId(rs.getInt("id"));
+                    inv.setUserId(rs.getInt("user_id"));
+                    inv.setSubmissionDate(rs.getDate("upload_date").toLocalDate());
+                    inv.setStatus(Invoice.InvoiceStatus.valueOf(rs.getString("status").toUpperCase()));
+                    invoices.add(inv);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

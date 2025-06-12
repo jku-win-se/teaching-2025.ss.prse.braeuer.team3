@@ -98,7 +98,6 @@ public class AddInvoiceController {
     }
 
     private void closeWindow() {
-        // Use chooseFileButton to retrieve current stage instead of submitButton
         Stage stage = (Stage) chooseFileButton.getScene().getWindow();
         stage.close();
     }

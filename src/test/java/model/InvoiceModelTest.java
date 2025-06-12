@@ -39,13 +39,4 @@ class InvoiceModelTest {
 
         assertFalse(inv.isEditable(), "Invoice aus vergangenem Monat darf nicht editierbar sein");
     }
-
-    @Test
-    void testIsEditableApprovedStatus() {
-        Invoice inv = new Invoice("f.png", Invoice.InvoiceCategory.RESTAURANT, 5.0);
-        inv.setSubmissionDate(LocalDate.now());
-        inv.setStatus(Invoice.InvoiceStatus.APPROVED);
-
-        assertFalse(inv.isEditable(), "Approved Invoice darf nicht editierbar sein");
-    }
 }

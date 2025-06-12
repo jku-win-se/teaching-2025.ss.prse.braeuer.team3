@@ -202,7 +202,10 @@ public class LoginController {
         a.showAndWait();
     }
 
-    /** ➤ Fügt die fehlende login(...)–Methode wieder hinzu */
+    /**
+     * Wird von der LoginView erwartet:
+     * Prüft synchron, ob die Credentials korrekt sind.
+     */
     public boolean login(String email, String password) {
         return UserDAO.validateLogin(email, password) != null;
     }

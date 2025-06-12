@@ -13,18 +13,29 @@ public class User {
     private StringProperty rolle = new SimpleStringProperty();
     private BooleanProperty mustChangePassword = new SimpleBooleanProperty(false);
 
-    public User(int id, String email, String password, String name, String rolle, boolean mustChange) {
+    // ----- Neue Properties für Notification-Preferences -----
+    private BooleanProperty invoiceApprovedPref = new SimpleBooleanProperty(true);
+    private BooleanProperty invoiceRejectedPref = new SimpleBooleanProperty(true);
+    private BooleanProperty monthlySummaryPref  = new SimpleBooleanProperty(false);
+
+    /** Vollständiger Konstruktor */
+    public User(int id,
+                String email,
+                String password,
+                String name,
+                String rolle,
+                boolean mustChange) {
         this.id    = id;
         this.email.set(email);
         this.password = password;
         this.name .set(name);
         this.rolle.set(rolle);
         this.mustChangePassword.set(mustChange);
+        // Notification-Defaults bleiben hier auf true/true/false
     }
 
-    public User() {
-        // leerer Konstruktor für FXML etc.
-    }
+    /** Leer-Konstruktor für FXML etc. */
+    public User() { }
 
     // --- Getter ---
 
@@ -48,9 +59,19 @@ public class User {
         return rolle.get();
     }
 
-    /** Gibt zurück, ob der User sein Passwort beim nächsten Login ändern muss */
+    /** Muss das Passwort ändern? */
     public boolean isMustChangePassword() {
         return mustChangePassword.get();
+    }
+
+    /** Zum Auslesen einer Notification-Einstellung nach Typ */
+    public boolean getNotificationPref(String type) {
+        return switch (type) {
+            case "INVOICE_APPROVED"  -> invoiceApprovedPref.get();
+            case "INVOICE_REJECTED"  -> invoiceRejectedPref.get();
+            case "MONTHLY_SUMMARY"   -> monthlySummaryPref.get();
+            default                  -> false;
+        };
     }
 
     // --- Setter ---
@@ -75,9 +96,23 @@ public class User {
         this.rolle.set(rolle);
     }
 
-    /** Setzt das Flag, ob der User sein Passwort ändern muss */
+    /** Setzt das Flag für Erst-Passwort-Änderung */
     public void setMustChangePassword(boolean flag) {
         this.mustChangePassword.set(flag);
+    }
+
+    /** Setzt eine Notification-Einstellung nach Typ */
+    public void setNotificationPref(String type, boolean enabled) {
+        switch (type) {
+            case "INVOICE_APPROVED"  -> invoiceApprovedPref.set(enabled);
+            case "INVOICE_REJECTED"  -> invoiceRejectedPref.set(enabled);
+            case "MONTHLY_SUMMARY"   -> monthlySummaryPref.set(enabled);
+        }
+    }
+
+    /** Alias, falls irgendwo setPasswordHash(...) aufgerufen wird */
+    public void setPasswordHash(String hash) {
+        setPassword(hash);
     }
 
     // --- Property-Methoden ---
@@ -98,8 +133,15 @@ public class User {
         return mustChangePassword;
     }
 
-    /** Alias, falls irgendwo setPasswordHash(...) aufgerufen wird */
-    public void setPasswordHash(String hash) {
-        setPassword(hash);
+    public BooleanProperty invoiceApprovedPrefProperty() {
+        return invoiceApprovedPref;
+    }
+
+    public BooleanProperty invoiceRejectedPrefProperty() {
+        return invoiceRejectedPref;
+    }
+
+    public BooleanProperty monthlySummaryPrefProperty() {
+        return monthlySummaryPref;
     }
 }

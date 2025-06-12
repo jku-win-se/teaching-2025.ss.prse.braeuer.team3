@@ -15,15 +15,6 @@ public class SettingsController {
     @FXML private Button changePasswordButton;
     @FXML private Button updateProfileButton;
     @FXML private Button notificationPrefsButton;
-
-    /** Öffnet das Change-Password-Modal */
-    @FXML
-    private void handleChangePassword() {
-        openModal("/view/ChangePasswordView.fxml", "Change Password");
-    }
-
-    /** Öffnet das Update-Profile-Modal */
-    @FXML
     private void handleUpdateProfile() {
         openModal("/view/UpdateProfileView.fxml", "Update Profile");
     }
@@ -33,7 +24,6 @@ public class SettingsController {
     private void handleNotificationPreferences() {
         openModal("/view/NotificationPreferencesView.fxml", "Notification Preferences");
     }
-
     /**
      * Hilfsmethode, um ein FXML in einem modal Dialog zu öffnen
      */

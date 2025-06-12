@@ -130,16 +130,16 @@ public class UserDAO {
     public static boolean addUser(String name, String email, String role) {
         String defaultHash = BCrypt.hashpw("default123", BCrypt.gensalt());
         String sql = """
-        INSERT INTO benutzer(name, email, rolle, passwort, must_change_password)
-        VALUES (?, ?, ?, ?, TRUE)
-    """;
+            INSERT INTO benutzer(name, email, rolle, passwort, must_change_password)
+            VALUES (?, ?, ?, ?, TRUE)
+        """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setString(1, name);
             st.setString(2, email);
-            st.setString(3, role);          // kein ::benutzer_rolle mehr
+            st.setString(3, role);
             st.setString(4, defaultHash);
             return st.executeUpdate() == 1;
 
@@ -179,6 +179,64 @@ public class UserDAO {
 
             stmt.setString(1, email);
             return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ────────────────────────────────────────────────────────
+    // Neue Methoden für Notification Preferences
+    // ────────────────────────────────────────────────────────
+
+    /**
+     * Liest aus, ob der User-Typ für diese Notification enabled oder disabled ist.
+     * Gibt bei erstmaligem Zugriff Defaultwerte zurück:
+     *   - Alle Notification-Typen ON, außer "MONTHLY_SUMMARY" → OFF.
+     */
+    public static boolean getNotificationPref(int userId, String type) {
+        String sql = """
+            SELECT enabled
+              FROM notification_preferences
+             WHERE user_id = ? AND type = ?
+        """;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, userId);
+            st.setString(2, type);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean("enabled");
+            } else {
+                return !"MONTHLY_SUMMARY".equalsIgnoreCase(type);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    /**
+     * Speichert oder aktualisiert die Notification-Einstellung für den User.
+     * Verwendet UPSERT (ON CONFLICT DO UPDATE).
+     */
+    public static boolean updateNotificationPref(int userId, String type, boolean enabled) {
+        String sql = """
+            INSERT INTO notification_preferences(user_id, type, enabled)
+            VALUES(?, ?, ?)
+            ON CONFLICT (user_id, type)
+              DO UPDATE SET enabled = EXCLUDED.enabled
+        """;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, userId);
+            st.setString(2, type);
+            st.setBoolean(3, enabled);
+            return st.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();

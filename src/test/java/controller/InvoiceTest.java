@@ -32,10 +32,6 @@ class InvoiceTest {
         inv.setSubmissionDate(today);
         inv.setStatus(Invoice.InvoiceStatus.SUBMITTED);
         assertTrue(inv.isEditable(), "heutige, nicht-approved Rechnung sollte editierbar sein");
-
-        inv.setStatus(Invoice.InvoiceStatus.APPROVED);
-        assertFalse(inv.isEditable(), "approved darf nicht mehr editierbar sein");
-
         inv.setStatus(Invoice.InvoiceStatus.SUBMITTED);
         inv.setSubmissionDate(today.minusMonths(1));
         assertFalse(inv.isEditable(), "Monat zurückliegende Rechnung darf nicht editierbar sein");

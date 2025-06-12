@@ -77,4 +77,24 @@
 .info-button:hover {
     -fx-background-color: rgba(0, 123, 255, 0.1);
 }
-
+.icon-button {
+    /* Oranger Hintergrund */
+    -fx-background-color: #E07945;
+    /* Vollrund (Radius = Hälfte der Breite) */
+    -fx-background-radius: 50%;
+    /* Fixe Größe – hier 40×40px */
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+    /* Icon schön zentrieren */
+    -fx-padding: 8px;
+    /* Maus-Cursor */
+    -fx-cursor: hand;
+}
+.icon-button:hover {
+    /* Leichter Hover-Effekt */
+    -fx-background-color: #DA7A3C;
+}
