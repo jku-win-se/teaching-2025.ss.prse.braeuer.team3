@@ -50,6 +50,7 @@
                 <Button text="Delete Invoice" fx:id="deleteButton" onAction="#deleteInvoice" styleClass="main-button"/>
                 <Button text="Reject Invoice" fx:id="rejectButton" onAction="#rejectInvoice" styleClass="main-button"/>
                 <Button text="Export CSV" fx:id="exportCSVButton" onAction="#exportCSV" styleClass="main-button"/>
+                <Button fx:id="exportPdfButton" text="Export PDF" onAction="#exportPayrollPDF"  styleClass="main-button"/>
                 <Button text="Export Payroll JSON" onAction="#exportPayrollJSON" styleClass="main-button"/>
                 <Button text="Export Payroll XML" onAction="#exportPayrollXML" styleClass="main-button"/>
                 <Button text="Edit Invoice" fx:id="editButton" onAction="#editInvoice" styleClass="main-button"/>

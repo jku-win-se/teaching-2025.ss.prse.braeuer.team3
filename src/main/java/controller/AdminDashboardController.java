@@ -21,8 +21,18 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
 
 public class AdminDashboardController {
 
@@ -163,7 +173,6 @@ public class AdminDashboardController {
             });
         }
     }
-
     @FXML
     private void exportCSV() {
         FileChooser chooser = new FileChooser();
@@ -173,17 +182,21 @@ public class AdminDashboardController {
         if (file == null) return;
 
         try (FileWriter w = new FileWriter(file)) {
-            w.write("Email,Date,Invoice Amount,Reimbursement,Classification,Status\n");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            w.write("\"User Email\";\"Date\";\"Invoice Amount\";\"Reimbursement\";\"Classification\";\"Status\"\n");
+
             for (Invoice inv : invoiceTable.getItems()) {
-                w.write(String.join(",",
-                        inv.getEmail(),
-                        inv.getSubmissionDate().toString(),
-                        String.valueOf(inv.getInvoiceAmount()),
-                        String.valueOf(inv.getReimbursementAmount()),
-                        inv.getCategory().toString(),
-                        inv.getStatus().toString()
+                w.write(String.join(";",
+                        "\"" + inv.getEmail() + "\"",
+                        "\"" + inv.getSubmissionDate().format(formatter) + "\"",
+                        "\"" + String.format("%.2f", inv.getInvoiceAmount()).replace(".", ",") + "\"",
+                        "\"" + String.format("%.2f", inv.getReimbursementAmount()).replace(".", ",") + "\"",
+                        "\"" + inv.getCategory().toString() + "\"",
+                        "\"" + inv.getStatus().toString() + "\""
                 ) + "\n");
             }
+
             messageLabel.setText("Exported CSV successfully.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -192,6 +205,53 @@ public class AdminDashboardController {
     }
 
     @FXML
+    private void exportPayrollPDF() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save PDF File");
+        chooser.setInitialFileName("invoices.pdf");
+        File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
+        if (file == null) return;
+
+        try {
+            PdfWriter writer = new PdfWriter(file);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            Paragraph title = new Paragraph("Invoice Export")
+                    .setFontSize(16)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(title);
+            document.add(new Paragraph("\n"));
+
+            Table table = new Table(6);
+            table.addCell("User Email");
+            table.addCell("Date");
+            table.addCell("Invoice Amount");
+            table.addCell("Reimbursement");
+            table.addCell("Classification");
+            table.addCell("Status");
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            for (Invoice inv : invoiceTable.getItems()) {
+                table.addCell(inv.getEmail());
+                table.addCell(inv.getSubmissionDate().format(formatter));
+                table.addCell(String.format("%.2f", inv.getInvoiceAmount()).replace(".", ","));
+                table.addCell(String.format("%.2f", inv.getReimbursementAmount()).replace(".", ","));
+                table.addCell(inv.getCategory().toString());
+                table.addCell(inv.getStatus().toString());
+            }
+
+            document.add(table);
+            document.close();
+            messageLabel.setText("Exported PDF successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            messageLabel.setText("Error exporting PDF.");
+        }
+    }
+    @FXML
     private void exportPayrollJSON() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save Payroll JSON");
@@ -199,16 +259,24 @@ public class AdminDashboardController {
         File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
         if (file == null) return;
 
+        // Grupisanje i sumiranje po korisniku
+        Map<String, double[]> userSums = new HashMap<>();
+        for (Invoice inv : invoiceTable.getItems()) {
+            userSums.putIfAbsent(inv.getEmail(), new double[]{0, 0});
+            userSums.get(inv.getEmail())[0] += inv.getInvoiceAmount();
+            userSums.get(inv.getEmail())[1] += inv.getReimbursementAmount();
+        }
         try (FileWriter w = new FileWriter(file)) {
             w.write("[\n");
-            var items = invoiceTable.getItems();
-            for (int i = 0; i < items.size(); i++) {
-                Invoice inv = items.get(i);
+            int i = 0;
+            for (Map.Entry<String, double[]> entry : userSums.entrySet()) {
+                String email = entry.getKey();
+                double[] sums = entry.getValue();
                 w.write("  {\n");
-                w.write("    \"email\": \"" + inv.getEmail() + "\",\n");
-                w.write("    \"invoiceAmount\": " + inv.getInvoiceAmount() + ",\n");
-                w.write("    \"reimbursementAmount\": " + inv.getReimbursementAmount() + "\n");
-                w.write(i < items.size()-1 ? "  },\n" : "  }\n");
+                w.write("    \"email\": \"" + email + "\",\n");
+                w.write("    \"totalInvoiceAmount\": " + String.format("%.2f", sums[0]) + ",\n");
+                w.write("    \"totalReimbursementAmount\": " + String.format("%.2f", sums[1]) + "\n");
+                w.write(i++ < userSums.size() - 1 ? "  },\n" : "  }\n");
             }
             w.write("]\n");
             messageLabel.setText("Exported Payroll JSON successfully.");
@@ -218,6 +286,7 @@ public class AdminDashboardController {
         }
     }
 
+
     @FXML
     private void exportPayrollXML() {
         FileChooser chooser = new FileChooser();
@@ -226,13 +295,22 @@ public class AdminDashboardController {
         File file = chooser.showSaveDialog(invoiceTable.getScene().getWindow());
         if (file == null) return;
 
+        // Grupisanje po korisniku (kao u JSON verziji)
+        Map<String, double[]> userSums = new HashMap<>();
+        for (Invoice inv : invoiceTable.getItems()) {
+            userSums.putIfAbsent(inv.getEmail(), new double[]{0, 0});
+            userSums.get(inv.getEmail())[0] += inv.getInvoiceAmount();
+            userSums.get(inv.getEmail())[1] += inv.getReimbursementAmount();
+        }
         try (FileWriter w = new FileWriter(file)) {
             w.write("<Payroll>\n");
-            for (Invoice inv : invoiceTable.getItems()) {
+            for (Map.Entry<String, double[]> entry : userSums.entrySet()) {
+                String email = entry.getKey();
+                double[] sums = entry.getValue();
                 w.write("  <Employee>\n");
-                w.write("    <Email>" + inv.getEmail() + "</Email>\n");
-                w.write("    <InvoiceAmount>" + inv.getInvoiceAmount() + "</InvoiceAmount>\n");
-                w.write("    <ReimbursementAmount>" + inv.getReimbursementAmount() + "</ReimbursementAmount>\n");
+                w.write("    <Email>" + email + "</Email>\n");
+                w.write("    <TotalInvoiceAmount>" + String.format("%.2f", sums[0]).replace(".", ",") + "</TotalInvoiceAmount>\n");
+                w.write("    <TotalReimbursementAmount>" + String.format("%.2f", sums[1]).replace(".", ",") + "</TotalReimbursementAmount>\n");
                 w.write("  </Employee>\n");
             }
             w.write("</Payroll>\n");
@@ -242,7 +320,6 @@ public class AdminDashboardController {
             messageLabel.setText("Error exporting Payroll XML.");
         }
     }
-
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
