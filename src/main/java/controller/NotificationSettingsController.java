@@ -19,20 +19,16 @@ public class NotificationSettingsController {
     @FXML
     public void initialize() {
         int userId = Session.getCurrentUser().getId();
-        // Lade aktuelle Settings (falls noch keiner, werden Default in DAO angelegt)
         settings = NotificationSettingsDAO.getSettingsForUser(userId);
 
-        // Toggle initialisieren
         approvedToggle.setSelected(settings.isNotifyInvoiceApproved());
         rejectedToggle.setSelected(settings.isNotifyInvoiceRejected());
         monthlyToggle.setSelected(settings.isNotifyMonthlySummary());
 
-        // Change-Listener, um jede Änderung persistierend sofort zu speichern
         approvedToggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
             boolean ok = NotificationSettingsDAO.updateInvoiceApprovedFlag(userId, newVal);
             if (!ok) {
                 showError("Could not update 'Invoice Approved' preference.");
-                // Alte Einstellung wiederherstellen:
                 approvedToggle.setSelected(oldVal);
             }
         });

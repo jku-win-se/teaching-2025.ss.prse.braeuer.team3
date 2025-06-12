@@ -10,8 +10,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.RequestHistoryController"
             stylesheets="@/css/dashboard.css">
-
-    <!-- TOP mit linker Padding 20, damit es bündig zur Tabelle ist -->
     <top>
         <HBox alignment="CENTER_LEFT"
               spacing="10"
@@ -30,7 +28,6 @@
     </top>
 
     <center>
-        <!-- gleiche linke Padding 20 + unten/rechts 20 -->
         <VBox spacing="20" style="-fx-padding: 0 20 20 20;">
             <TableView fx:id="invoiceTable" prefHeight="300">
                 <columns>

@@ -10,8 +10,6 @@
             stylesheets="@/css/upload.css"
             styleClass="root"
             prefWidth="400" prefHeight="500">
-
-    <!-- 1) Definiere deine ToggleGroup hier, außerhalb der children -->
     <fx:define>
         <ToggleGroup fx:id="categoryGroup"/>
     </fx:define>
@@ -28,8 +26,6 @@
                     styleClass="choose-file-button" />
             <Label fx:id="fileLabel" text="No file selected" />
         </VBox>
-
-        <!-- 2) Hier nur deine RadioButtons, verknüpft mit der definierten Gruppe -->
         <HBox spacing="10" alignment="CENTER">
             <RadioButton fx:id="restaurantRadio"
                          text="Restaurant"
@@ -39,10 +35,8 @@
                          toggleGroup="$categoryGroup"/>
         </HBox>
 
-        <!-- Rechnungsbetrag -->
         <TextField fx:id="invoiceAmountField" promptText="Enter invoice amount (€)" />
 
-        <!-- Berechneter Rückerstattungsbetrag -->
         <HBox spacing="10" alignment="CENTER">
             <Label text="Reimbursement (€):" />
             <Label fx:id="reimbursementAmountLabel" text="-" />

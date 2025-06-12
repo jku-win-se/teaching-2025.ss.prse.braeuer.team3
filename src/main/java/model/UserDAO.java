@@ -192,13 +192,11 @@ public class UserDAO {
             if (rs.next()) {
                 return rs.getBoolean("enabled");
             } else {
-                // Standardwerte, falls noch kein Eintrag existiert
                 return !"MONTHLY_SUMMARY".equalsIgnoreCase(type);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            // Im Fehlerfall lieber ON, damit nichts verloren geht
             return true;
         }
     }

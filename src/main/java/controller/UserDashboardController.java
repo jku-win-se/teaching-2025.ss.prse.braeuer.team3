@@ -38,7 +38,6 @@ public class UserDashboardController {
 
     private javafx.scene.Node homeContent;
 
-    // Thread‐Pool für Hintergrund‐Tasks
     private final Executor executor = Executors.newCachedThreadPool(r -> {
         Thread t = new Thread(r);
         t.setDaemon(true);
@@ -79,7 +78,6 @@ public class UserDashboardController {
         });
 
         task.setOnFailed(e -> {
-            // hier ggf. Logging oder Alert
             task.getException().printStackTrace();
         });
 
@@ -129,7 +127,6 @@ public class UserDashboardController {
                 + "-fx-border-color:#ccc; "
                 + "-fx-border-radius:5;");
 
-        // Klick ⇒ Sternchen umschalten
         box.setOnMouseClicked(e -> {
             boolean nowStarred = !inv.isStarred();
             InvoiceDAO.toggleStar(Session.getCurrentUser().getId(), inv.getId(), nowStarred);

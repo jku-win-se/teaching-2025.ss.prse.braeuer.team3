@@ -15,7 +15,7 @@ import java.util.List;
 public class NotificationsController {
 
     @FXML private ListView<Notification> listView;
-    @FXML private Button closeButton;  // muss mit fx:id im FXML übereinstimmen
+    @FXML private Button closeButton;
 
     @FXML
     public void initialize() {

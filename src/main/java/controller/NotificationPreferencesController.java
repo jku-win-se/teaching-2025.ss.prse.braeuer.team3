@@ -44,11 +44,9 @@ public class NotificationPreferencesController {
         int userId = Session.getCurrentUser().getId();
         boolean ok = UserDAO.updateNotificationPref(userId, type, enabled);
         if (ok) {
-            // auch im Session-Objekt aktualisieren
             Session.getCurrentUser().setNotificationPref(type, enabled);
             showFeedback();
         } else {
-            // hier ggfs. Fehlermeldung integrieren
         }
     }
 
@@ -63,7 +61,6 @@ public class NotificationPreferencesController {
     /** Schließt das Modal */
     @FXML
     private void onClose() {
-        // Label oder Button referenzieren, um Stage zu holen
         Stage stage = (Stage) lblFeedback.getScene().getWindow();
         stage.close();
     }
