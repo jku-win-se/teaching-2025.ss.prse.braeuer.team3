@@ -19,6 +19,10 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 public class LoginController {
 
     @FXML private TextField emailField;
@@ -29,6 +33,8 @@ public class LoginController {
     @FXML private ProgressIndicator loadingSpinner;
 
     private int failedAttempts = 0;
+    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
+
 
     @FXML
     public void initialize() {
@@ -98,8 +104,9 @@ public class LoginController {
             if (user != null) {
                 failedAttempts = 0;
                 Session.setCurrentUser(user);
-                System.out.println("Login successfully as: " + user.getRolle());
-
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Login successfully as: " + user.getRolle());
+                }
                 // Erst Passwort ändern, wenn Flag gesetzt
                 if (user.isMustChangePassword()) {
                     try {
