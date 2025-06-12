@@ -107,6 +107,24 @@ public class UserDAO {
 
         return users;
     }
+    /** Aktualisiert Name und E-Mail eines Users */
+    public static boolean updateUserProfile(int userId, String newName, String newEmail) {
+        String sql = """
+        UPDATE benutzer
+           SET name = ?, email = ?
+         WHERE id = ?
+    """;
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement st = c.prepareStatement(sql)) {
+            st.setString(1, newName);
+            st.setString(2, newEmail);
+            st.setInt(3, userId);
+            return st.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     /** Legt einen neuen User mit Default-Passwort und Flag=true an */
     public static boolean addUser(String name, String email, String role) {

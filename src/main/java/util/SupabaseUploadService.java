@@ -14,11 +14,16 @@ import java.time.LocalDate;
 
 import org.postgresql.util.PGobject;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class SupabaseUploadService {
 
     private static final String SUPABASE_URL = "https://onvxredsmjqlufgjjojh.supabase.co";
     private static final String SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9udnhyZWRzbWpxbHVmZ2pqb2poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5OTc5NjYsImV4cCI6MjA1ODU3Mzk2Nn0.1BC54Uq4VaU1V1gkA4TcUyHxlMb8WFlHevq6Vmmh24k";
     private static final String SUPABASE_BUCKET = "rechnung";
+    private static final Logger LOGGER = Logger.getLogger(SupabaseUploadService.class.getName());
+
 
     /**
      * 1. Datei zu Supabase Storage hochladen
@@ -40,18 +45,22 @@ public class SupabaseUploadService {
 
             int code = connection.getResponseCode();
             if (code == 200 || code == 201) {
-                System.out.println("Upload successful.");
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Upload successful.");
+                }
                 return fileName;
             } else {
-                System.out.println("Upload failed with code: " + code);
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("Upload failed with code: " + code);
+                }
                 try (InputStream err = connection.getErrorStream()) {
-                    if (err != null) System.out.println(new String(err.readAllBytes()));
+                    if (err != null) LOGGER.warning(new String(err.readAllBytes()));
                 }
                 return null;
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "IOException during upload", e);
             return null;
         }
     }
@@ -99,7 +108,7 @@ public class SupabaseUploadService {
             return rows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "SQL error while saving invoice to DB", e);
             return false;
         }
     }

@@ -39,14 +39,12 @@ public class SettingsController {
     private void handleNotificationPreferences() {
         openModal("/view/NotificationPreferencesView.fxml", "Notification Preferences");
     }
-
     /** Handhabung der Sprachwahl */
     @FXML
     private void handleChangeLanguage() {
         // TODO: implement language selection dialog
         openModal("/view/LanguageSelectionView.fxml", "Select Language");
     }
-
     /**
      * Hilfsmethode, um ein FXML in einem modal Dialog zu öffnen
      */
