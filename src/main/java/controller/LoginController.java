@@ -170,11 +170,17 @@ public class LoginController {
             }
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle(title);
-            stage.setMaximized(true);
-            stage.show();
+
+            Stage newStage = new Stage();
+            newStage.setTitle(title);
+            Scene scene = new Scene(root);
+            newStage.setScene(scene);
+            newStage.setMaximized(true);
+            newStage.show();
+            //kako bi se zatvorio prozor login
+            Stage currentStage = (Stage) loginButton.getScene().getWindow();
+            currentStage.close();
+
         } catch (IOException ex) {
             ex.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error loading the next view.");
