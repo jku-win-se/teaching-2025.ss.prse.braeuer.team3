@@ -15,21 +15,6 @@ public class SettingsController {
     @FXML private Button changePasswordButton;
     @FXML private Button updateProfileButton;
     @FXML private Button notificationPrefsButton;
-    @FXML private Button languageButton;
-
-    @FXML
-    public void initialize() {
-        // any initialization if needed
-    }
-
-    /** Öffnet das Change-Password-Modal */
-    @FXML
-    private void handleChangePassword() {
-        openModal("/view/ChangePasswordView.fxml", "Change Password");
-    }
-
-    /** Öffnet das Update-Profile-Modal */
-    @FXML
     private void handleUpdateProfile() {
         openModal("/view/UpdateProfileView.fxml", "Update Profile");
     }
@@ -38,12 +23,6 @@ public class SettingsController {
     @FXML
     private void handleNotificationPreferences() {
         openModal("/view/NotificationPreferencesView.fxml", "Notification Preferences");
-    }
-    /** Handhabung der Sprachwahl */
-    @FXML
-    private void handleChangeLanguage() {
-        // TODO: implement language selection dialog
-        openModal("/view/LanguageSelectionView.fxml", "Select Language");
     }
     /**
      * Hilfsmethode, um ein FXML in einem modal Dialog zu öffnen
