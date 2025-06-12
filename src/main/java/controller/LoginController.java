@@ -104,8 +104,9 @@ public class LoginController {
             if (user != null) {
                 failedAttempts = 0;
                 Session.setCurrentUser(user);
-                LOGGER.info("Login successfully as: " + user.getRolle());
-
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Login successfully as: " + user.getRolle());
+                }
                 // Erst Passwort ändern, wenn Flag gesetzt
                 if (user.isMustChangePassword()) {
                     try {

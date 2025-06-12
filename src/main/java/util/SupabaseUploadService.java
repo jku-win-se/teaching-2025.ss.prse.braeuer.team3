@@ -45,10 +45,14 @@ public class SupabaseUploadService {
 
             int code = connection.getResponseCode();
             if (code == 200 || code == 201) {
-                LOGGER.info("Upload successful.");
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Upload successful.");
+                }
                 return fileName;
             } else {
-                LOGGER.warning("Upload failed with code: " + code);
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("Upload failed with code: " + code);
+                }
                 try (InputStream err = connection.getErrorStream()) {
                     if (err != null) LOGGER.warning(new String(err.readAllBytes()));
                 }
