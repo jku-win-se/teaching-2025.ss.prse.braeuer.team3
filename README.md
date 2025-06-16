@@ -2,8 +2,8 @@
 
 ## Dokumentation
 
-- [Benutzerdokumentation (User & Admin)](./docs/Benutzerdokumentation_Lunchify_v1.3.pdf)  
-- [Systemdokumentation](./docs/Systemdokumentation_Lunchify.pdf)
+- [Benutzerdokumentation (User & Admin)](./docs/Benutzerdoku_v1.4.pdf)  
+- [Systemdokumentation](./docs/Systemdokumentation%20Lunchify_v1.2.pdf)
 
 ## Projektübersicht
 **Lunchify** ist eine Desktop-Anwendung zur Verwaltung und Erstattung von Mitarbeitenden-Rechnungen. Angestellte können ihre Rechnungen (z. B. Restaurant- oder Supermarktbelege) hochladen und deren Status verfolgen. Administratoren erhalten statistische Auswertungen, können Rechnungen prüfen, bearbeiten und Auszahlungen auslösen. Zusätzlich stehen personalisierte Benachrichtigungen und Einstellungen zur Verfügung.
