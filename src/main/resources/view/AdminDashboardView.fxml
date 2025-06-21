@@ -1,75 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/javafx" fx:controller="controller.AdminDashboardController" stylesheets="@/css/admin-dashboard.css">
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.AdminDashboardController"
+            stylesheets="@/css/admin-dashboard.css">
 
-    <!-- Sidebar -->
+    <!-- Sidebar (unverändert) -->
     <left>
-        <VBox spacing="20" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="200">
-            <padding>
-                <Insets top="30" right="10" bottom="30" left="10"/>
-            </padding>
-
-            <VBox spacing="10" styleClass="sidebar-box">
-                <Button text="👥 Manage Users" styleClass="sidebar-button" onAction="#openUserManagement"/>
-            </VBox>
-
-            <VBox spacing="10" styleClass="sidebar-box">
-                <Button text="📥 Manage Requests" styleClass="sidebar-button"/>
-            </VBox>
-
-
-            <VBox spacing="10" styleClass="sidebar-box">
-                <Button text="⚙ Settings" styleClass="sidebar-button" onAction="#openReimbursementSettings"/>
-            </VBox>
-
+        <VBox styleClass="sidebar" spacing="20" alignment="TOP_CENTER" prefWidth="200">
+            <padding><Insets top="30" right="10" bottom="30" left="10"/></padding>
+            <Button text="👥 Manage Users" styleClass="sidebar-button" onAction="#openUserManagement"/>
+            <Button text="📥 Manage Requests" styleClass="sidebar-button"/>
+            <Button text="⚙ Settings" styleClass="sidebar-button" onAction="#openReimbursementSettings"/>
             <Button text="🔓 Log out" styleClass="logout-button" onAction="#handleLogout"/>
         </VBox>
     </left>
 
     <!-- Main Content -->
     <center>
-        <VBox spacing="30" alignment="TOP_CENTER">
-            <padding>
-                <Insets top="30" right="30" bottom="30" left="30"/>
-            </padding>
+        <VBox spacing="20" style="-fx-padding: 30;">
 
+            <!-- Titel -->
             <Label text="📊 Admin Dashboard" styleClass="dashboard-title"/>
 
-            <!-- Search and Filter Section -->
-            <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="searchEmailField" promptText="Search by Email" styleClass="input-field"/>
-                <ChoiceBox fx:id="classificationFilter" styleClass="input-field"/>
-                <DatePicker fx:id="monthPicker" promptText="Select Month" styleClass="input-field"/>
+            <!-- Statistik-Karten -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox styleClass="stat-card">
+                    <Label text="Invoices / Monat" styleClass="stat-title"/>
+                    <Label fx:id="lblTotalPerMonth" text="–" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="stat-card">
+                    <Label text="Ø Invoices / Mitarbeiter" styleClass="stat-title"/>
+                    <Label fx:id="lblAvgPerEmp" text="–" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="stat-card">
+                    <Label text="Summe erstattet (12M)" styleClass="stat-title"/>
+                    <Label fx:id="lblReimb12m" text="–" styleClass="stat-value"/>
+                </VBox>
             </HBox>
 
-            <HBox spacing="10" alignment="CENTER">
-                <Button text="Delete Invoice" fx:id="deleteButton" onAction="#deleteInvoice" styleClass="main-button"/>
-                <Button text="Reject Invoice" fx:id="rejectButton" onAction="#rejectInvoice" styleClass="main-button"/>
-                <Button text="Export CSV" fx:id="exportCSVButton" onAction="#exportCSV" styleClass="main-button"/>
-                <Button fx:id="exportPdfButton" text="Export PDF" onAction="#exportPayrollPDF"  styleClass="main-button"/>
-                <Button text="Export Payroll JSON" onAction="#exportPayrollJSON" styleClass="main-button"/>
-                <Button text="Export Payroll XML" onAction="#exportPayrollXML" styleClass="main-button"/>
-                <Button text="Edit Invoice" fx:id="editButton" onAction="#editInvoice" styleClass="main-button"/>
+            <!-- Chart & Tabelle nebeneinander -->
+            <HBox spacing="20" alignment="TOP_CENTER">
+                <!-- PieChart-Card -->
+                <VBox spacing="10" styleClass="chart-card">
+                    <Label text="Kategorie-Verteilung" style="-fx-font-size:16; -fx-font-weight:bold;"/>
+                    <PieChart fx:id="pieCategoryChart" prefHeight="240" prefWidth="300"/>
+                </VBox>
+
+                <!-- Filter + Buttons + Tabelle -->
+                <VBox spacing="15">
+
+                    <!-- Suche / Filter -->
+                    <HBox spacing="10">
+                        <TextField fx:id="searchEmailField" promptText="Search by Email" styleClass="input-field"/>
+                        <ChoiceBox fx:id="classificationFilter" styleClass="input-field"/>
+                        <DatePicker fx:id="monthPicker" promptText="Select Month" styleClass="input-field"/>
+                    </HBox>
+
+                    <!-- Aktion-Buttons -->
+                    <FlowPane hgap="10" vgap="10">
+                        <Button text="Delete Invoice"    onAction="#deleteInvoice"    styleClass="main-button"/>
+                        <Button text="Reject Invoice"    onAction="#rejectInvoice"    styleClass="main-button"/>
+                        <Button text="Export CSV"        onAction="#exportCSV"         styleClass="main-button"/>
+                        <Button text="Export PDF"        onAction="#exportPayrollPDF"  styleClass="main-button"/>
+                        <Button text="Export JSON"       onAction="#exportPayrollJSON" styleClass="main-button"/>
+                        <Button text="Export XML"        onAction="#exportPayrollXML"  styleClass="main-button"/>
+                        <Button text="Edit Invoice"      onAction="#editInvoice"       styleClass="main-button"/>
+                    </FlowPane>
+
+                    <Label fx:id="messageLabel" styleClass="message-label"/>
+
+                    <!-- Invoice Table -->
+                    <TableView fx:id="invoiceTable" styleClass="admin-table" prefHeight="300">
+                        <columns>
+                            <TableColumn fx:id="emailColumn" text="User Email" prefWidth="150"/>
+                            <TableColumn fx:id="dateColumn" text="Submission Date" prefWidth="120"/>
+                            <TableColumn fx:id="invoiceAmountColumn" text="Invoice Amount (€)" prefWidth="120"/>
+                            <TableColumn fx:id="reimbursementAmountColumn" text="Reimbursement (€)" prefWidth="120"/>
+                            <TableColumn fx:id="classificationColumn" text="Classification" prefWidth="140"/>
+                            <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                </VBox>
             </HBox>
-
-            <Label fx:id="messageLabel" styleClass="message-label"/>
-
-            <!-- Invoice Table -->
-            <TableView fx:id="invoiceTable" prefHeight="400" styleClass="admin-table">
-                <columns>
-                    <TableColumn fx:id="emailColumn" text="User Email" prefWidth="150"/>
-                    <TableColumn fx:id="dateColumn" text="Submission Date" prefWidth="120"/>
-                    <TableColumn fx:id="invoiceAmountColumn" text="Invoice Amount (€)" prefWidth="100"/>
-                    <TableColumn fx:id="reimbursementAmountColumn" text="Reimbursement (€)" prefWidth="120"/>
-                    <TableColumn fx:id="classificationColumn" text="Classification" prefWidth="150"/>
-                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
-                </columns>
-            </TableView>
         </VBox>
     </center>
-
 </BorderPane>
