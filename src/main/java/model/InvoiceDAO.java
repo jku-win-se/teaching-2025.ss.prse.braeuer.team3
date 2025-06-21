@@ -3,8 +3,11 @@ package model;
 import util.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InvoiceDAO {
 
@@ -37,7 +40,7 @@ public class InvoiceDAO {
         return invoices;
     }
 
-    /** Holt alle invoices des Users (mit Beträgen) */
+    /** Holt alle Invoices des aktuellen Users */
     public static List<Invoice> getAllInvoicesByUser(int userId) {
         List<Invoice> invoices = new ArrayList<>();
         String sql = """
@@ -155,18 +158,22 @@ public class InvoiceDAO {
         }
     }
 
+    /** Aktualisiert alle Felder inklusive Status auf 'edited' */
     public static boolean updateInvoice(Invoice invoice) {
         String sql = """
             UPDATE rechnung
-               SET type           = ?::rechnung_kategorie,
-                   invoice_amount = ?
-             WHERE id             = ?
+               SET type = ?::rechnung_kategorie,
+                   invoice_amount = ?,
+                   reimbursement_amount = ?,
+                   status = 'edited'
+             WHERE id = ?
         """;
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, invoice.getCategory().name());
+            stmt.setString(1, invoice.getCategory().name().toLowerCase());
             stmt.setDouble(2, invoice.getInvoiceAmount());
-            stmt.setInt(3, invoice.getId());
+            stmt.setDouble(3, invoice.getReimbursementAmount());
+            stmt.setInt(4, invoice.getId());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -174,6 +181,7 @@ public class InvoiceDAO {
         }
     }
 
+    /** Löscht eine Rechnung */
     public static boolean deleteInvoice(int invoiceId) {
         String sql = "DELETE FROM rechnung WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -186,10 +194,11 @@ public class InvoiceDAO {
         }
     }
 
+    /** Fügt eine neue Rechnung ein */
     public static boolean addInvoice(Invoice invoice, int userId) {
         String sql = """
             INSERT INTO rechnung
-                (user_id, file_url, type, invoice_amount, reimbursement_amount, upload_date, status)
+               (user_id, file_url, type, invoice_amount, reimbursement_amount, upload_date, status)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """;
         try (Connection conn = DBConnection.getConnection();
@@ -208,11 +217,12 @@ public class InvoiceDAO {
         }
     }
 
+    /** Setzt nur den Status (submitted, rejected, edited) */
     public static boolean updateInvoiceStatus(int invoiceId, Invoice.InvoiceStatus status) {
         String sql = "UPDATE rechnung SET status = ?::rechnung_status WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, status.name());
+            stmt.setString(1, status.name().toLowerCase());
             stmt.setInt(2, invoiceId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -221,6 +231,7 @@ public class InvoiceDAO {
         }
     }
 
+    /** Holt alle Invoices eines bestimmten Jahres+Monats */
     public static List<Invoice> findInvoicesByMonth(int year, int month) {
         List<Invoice> invoices = new ArrayList<>();
         String sql = """

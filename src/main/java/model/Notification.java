@@ -1,23 +1,25 @@
 package model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class Notification {
-    private int id;
-    private int userId;
-    private String message;
-    private LocalDateTime timestamp;
+    private final int id;
+    private final int userId;
+    private final String message;
+    private final OffsetDateTime createdAt;
+    private final boolean seen;
 
-    public Notification(int id, int userId, String message, LocalDateTime timestamp) {
-        this.id = id;
-        this.userId = userId;
-        this.message = message;
-        this.timestamp = timestamp;
+    public Notification(int id, int userId, String message, OffsetDateTime createdAt, boolean seen) {
+        this.id        = id;
+        this.userId    = userId;
+        this.message   = message;
+        this.createdAt = createdAt;
+        this.seen      = seen;
     }
 
-    // Getter
-    public int getId() { return id; }
-    public int getUserId() { return userId; }
-    public String getMessage() { return message; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public int getId()                 { return id; }
+    public int getUserId()             { return userId; }
+    public String getMessage()         { return message; }
+    public OffsetDateTime getTimestamp() { return createdAt; }
+    public boolean isSeen()            { return seen; }
 }

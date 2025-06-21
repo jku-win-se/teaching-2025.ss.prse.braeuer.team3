@@ -5,7 +5,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import model.RefundConfigDAO;
 
-//Controller klasa mi treba za podešavanje iznosa refundacije.
 
 public class ReimbursementSettingsController {
 
@@ -15,7 +14,6 @@ public class ReimbursementSettingsController {
     @FXML
     private TextField supermarketAmountField;
 
-    //Poziva se kada admin klikne na "Save Reimbursement Settings".
     @FXML
     private void saveReimbursementSettings() {
         try {
@@ -44,7 +42,6 @@ public class ReimbursementSettingsController {
         }
     }
 
-    //Pomoćna metoda za prikaz poruke.
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

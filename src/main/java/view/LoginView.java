@@ -53,7 +53,6 @@ public class LoginView extends Application {
 
         if (success) {
             statusLabel.setText("Login erfolgreich!");
-            // TODO: Scene-Wechsel zum Dashboard
         } else {
             statusLabel.setText("E-Mail oder Passwort falsch.");
         }

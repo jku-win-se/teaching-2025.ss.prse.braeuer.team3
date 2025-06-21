@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class RequestHistoryController {
 
     @FXML private TableView<Invoice> invoiceTable;
@@ -35,6 +38,9 @@ public class RequestHistoryController {
     @FXML private Button infoButton;
 
     private ObservableList<Invoice> invoiceList = FXCollections.observableArrayList();
+    private static final Logger LOGGER = Logger.getLogger(RequestHistoryController.class.getName());
+
+
 
     @FXML
     public void initialize() {
@@ -148,7 +154,7 @@ public class RequestHistoryController {
             if (isErr) showAlert(Alert.AlertType.ERROR, "Could not load invoice image.");
         });
         image.progressProperty().addListener((obs, oldP, newP) ->
-                System.out.printf("Image loading: %.0f%%%n", newP.doubleValue()*100)
+                LOGGER.info(String.format("Image loading: %.0f%%%n", newP.doubleValue()*100))
         );
 
         ImageView imageView = new ImageView(image);
@@ -182,31 +188,46 @@ public class RequestHistoryController {
             showAlert(Alert.AlertType.WARNING, "Please select an invoice to edit.");
             return;
         }
+
         LocalDate today = LocalDate.now();
         boolean sameMonth = sel.getSubmissionDate().getMonth() == today.getMonth()
-                && sel.getSubmissionDate().getYear() == today.getYear();
-        if (!sameMonth || sel.getStatus() == Invoice.InvoiceStatus.APPROVED) {
-            showAlert(Alert.AlertType.WARNING, "Cannot edit past-month or approved invoices.");
+                && sel.getSubmissionDate().getYear()  == today.getYear();
+
+        // Abbrechen, wenn außerhalb des Monats oder bereits rejected
+        if (!sameMonth || sel.getStatus() == Invoice.InvoiceStatus.REJECTED) {
+            showAlert(Alert.AlertType.WARNING, "Cannot edit past-month or rejected invoices.");
             return;
         }
 
-        TextInputDialog dlg = new TextInputDialog(String.valueOf(sel.getInvoiceAmount()));
-        dlg.setTitle("Edit Invoice Amount");
-        dlg.setHeaderText("Enter new amount:");
-        dlg.showAndWait().ifPresent(v -> {
+        // Öffne den Dialog zum Ändern des Betrags
+        TextInputDialog dialog = new TextInputDialog(String.valueOf(sel.getInvoiceAmount()));
+        dialog.setTitle("Edit Invoice");
+        dialog.setHeaderText("Edit invoice amount:");
+        dialog.setContentText("New amount:");
+
+        dialog.showAndWait().ifPresent(newAmountStr -> {
             try {
-                double amt = Double.parseDouble(v);
-                sel.setInvoiceAmount(amt);
-                sel.setReimbursementAmount(Math.min(amt,
-                        sel.getCategory() == Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5));
-                if (InvoiceDAO.updateInvoice(sel)) {
-                    invoiceTable.refresh(); updateChart();
-                    showAlert(Alert.AlertType.INFORMATION, "Invoice updated.");
+                double newAmount = Double.parseDouble(newAmountStr);
+
+                // Werte setzen
+                sel.setInvoiceAmount(newAmount);
+                sel.setReimbursementAmount(
+                        Math.min(newAmount, sel.getCategory() == Invoice.InvoiceCategory.RESTAURANT ? 3.0 : 2.5)
+                );
+
+                // 1) eigentliche Update-Methode (betrifft type + amount)
+                boolean updated = InvoiceDAO.updateInvoice(sel);
+                // 2) und zusätzlich Status auf EDITED setzen
+                boolean statusUpdated = InvoiceDAO.updateInvoiceStatus(sel.getId(), Invoice.InvoiceStatus.EDITED);
+
+                if (updated && statusUpdated) {
+                    loadInvoices();
+                    showAlert(Alert.AlertType.INFORMATION,"Invoice updated and marked as EDITED.");
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Update failed.");
+                    showAlert(Alert.AlertType.INFORMATION,"Failed to update invoice.");
                 }
             } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.ERROR, "Invalid number.");
+                showAlert(Alert.AlertType.ERROR, "Invalid amount format.");
             }
         });
     }

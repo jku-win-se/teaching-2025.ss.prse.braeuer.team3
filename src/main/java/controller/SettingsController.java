@@ -15,12 +15,6 @@ public class SettingsController {
     @FXML private Button changePasswordButton;
     @FXML private Button updateProfileButton;
     @FXML private Button notificationPrefsButton;
-    @FXML private Button languageButton;
-
-    @FXML
-    public void initialize() {
-        // any initialization if needed
-    }
 
     /** Öffnet das Change-Password-Modal */
     @FXML
@@ -40,13 +34,6 @@ public class SettingsController {
         openModal("/view/NotificationPreferencesView.fxml", "Notification Preferences");
     }
 
-    /** (Optional) Handhabung der Sprachwahl */
-    @FXML
-    private void handleChangeLanguage() {
-        // TODO: implement language selection dialog
-        openModal("/view/LanguageSelectionView.fxml", "Select Language");
-    }
-
     /**
      * Hilfsmethode, um ein FXML in einem modal Dialog zu öffnen
      */
@@ -56,6 +43,7 @@ public class SettingsController {
             Parent root = loader.load();
 
             Stage dialog = new Stage();
+            dialog.initOwner(changePasswordButton.getScene().getWindow());
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setTitle(title);
             dialog.setResizable(false);

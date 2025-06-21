@@ -24,7 +24,7 @@ public class Invoice {
     }
 
     public enum InvoiceStatus {
-        SUBMITTED, APPROVED, REJECTED
+        SUBMITTED, EDITED, REJECTED
     }
 
     public Invoice(String fileName, InvoiceCategory category, double invoiceAmount) {
@@ -176,9 +176,10 @@ public class Invoice {
 
     public boolean isEditable() {
         LocalDate today = LocalDate.now();
-        boolean sameMonth = (submissionDate.get().getMonth() == today.getMonth())
-                && (submissionDate.get().getYear() == today.getYear());
-        boolean notApproved = (status.get() != InvoiceStatus.APPROVED);
-        return sameMonth && notApproved;
+        boolean sameMonth  = submissionDate.get().getMonth() == today.getMonth()
+                && submissionDate.get().getYear()  == today.getYear();
+        boolean notRejected = status.get() != InvoiceStatus.REJECTED;
+
+        return sameMonth && notRejected;
     }
 }
