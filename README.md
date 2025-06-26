@@ -2,7 +2,7 @@
 
 ## Dokumentation
 
-- [Benutzerdokumentation (User & Admin)](./docs/Benutzerdoku_v1.4.pdf)  
+- [Benutzerdokumentation (User & Admin)](./docs/Benutzerdoku_v1.5.pdf)  
 - [Systemdokumentation](./docs/Systemdokumentation%20Lunchify_v1.2.pdf)
 
 # Lunchify
