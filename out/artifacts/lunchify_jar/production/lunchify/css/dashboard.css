@@ -1,0 +1,100 @@
+/* Allgemein */
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #ffffff;
+}
+
+/* Sidebar */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-pref-width: 120;
+    -fx-padding: 10 0 10 15;
+    -fx-background-radius: 10;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:focused {
+    -fx-background-color: #e07945;
+    -fx-text-fill: white;
+}
+
+.button {
+    -fx-background-color: #e07945;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 10 20;
+}
+
+.button:hover {
+    -fx-background-color: #cf6e3b;
+}
+
+/* Label-Überschriften */
+.label {
+    -fx-text-fill: #333;
+}
+
+/* Vorschau-Bilder */
+.image-preview {
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.2), 6, 0.3, 0, 2);
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.primary-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.danger-button {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.info-button:hover > .graphic {
+    -fx-opacity: 0.8;
+}
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+.info-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 2px;
+}
+.info-button:hover {
+    -fx-background-color: rgba(0, 123, 255, 0.1);
+}
+.icon-button {
+    /* Oranger Hintergrund */
+    -fx-background-color: #E07945;
+    /* Vollrund (Radius = Hälfte der Breite) */
+    -fx-background-radius: 50%;
+    /* Fixe Größe – hier 40×40px */
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+    /* Icon schön zentrieren */
+    -fx-padding: 8px;
+    /* Maus-Cursor */
+    -fx-cursor: hand;
+}
+.icon-button:hover {
+    /* Leichter Hover-Effekt */
+    -fx-background-color: #DA7A3C;
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.SettingsController"
+            stylesheets="@/css/dashboard.css">
+
+    <center>
+        <VBox spacing="20" alignment="TOP_LEFT" style="-fx-padding: 40;">
+            <Label text="Account Settings"
+                   style="-fx-font-size:24; -fx-font-weight:bold;"/>
+            <VBox spacing="15" alignment="CENTER_LEFT">
+                <Button fx:id="changePasswordButton"
+                        text="Change Password"
+                        onAction="#handleChangePassword"
+                        styleClass="main-button"
+                        prefWidth="200" prefHeight="40"/>
+                <Button fx:id="updateProfileButton"
+                        text="Update Profile"
+                        onAction="#handleUpdateProfile"
+                        styleClass="main-button"
+                        prefWidth="200" prefHeight="40"/>
+                <Button fx:id="notificationPrefsButton"
+                        text="Notification Preferences"
+                        onAction="#handleNotificationPreferences"
+                        styleClass="main-button"
+                        prefWidth="200" prefHeight="40"/>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

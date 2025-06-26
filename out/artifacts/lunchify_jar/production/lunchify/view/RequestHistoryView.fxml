@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.RequestHistoryController"
+            stylesheets="@/css/dashboard.css">
+    <top>
+        <HBox alignment="CENTER_LEFT"
+              spacing="10"
+              style="-fx-padding: 20 20 0 20;">  <!-- oben rechts unten links -->
+            <Label text="Your Invoice Requests" styleClass="section-title"/>
+            <Button fx:id="infoButton" styleClass="info-button">
+                <graphic>
+                    <ImageView fitWidth="24" fitHeight="24" smooth="true" preserveRatio="true">
+                        <image>
+                            <Image url="@/images/info_icon.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" style="-fx-padding: 0 20 20 20;">
+            <TableView fx:id="invoiceTable" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="submissionDateColumn" text="Submission Date" prefWidth="150"/>
+                    <TableColumn fx:id="invoiceAmountColumn" text="Invoice (€)" prefWidth="100"/>
+                    <TableColumn fx:id="reimbursementAmountColumn" text="Reimbursement (€)" prefWidth="120"/>
+                    <TableColumn fx:id="categoryColumn" text="Category" prefWidth="150"/>
+                    <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="15" alignment="CENTER">
+                <Button text="Edit Selected" onAction="#handleEditInvoice" styleClass="primary-button"/>
+                <Button text="Delete Selected" onAction="#deleteSelectedInvoice" styleClass="danger-button"/>
+            </HBox>
+
+            <Label text="Invoice Distribution"
+                   style="-fx-font-size:18; -fx-font-weight:bold; -fx-padding:10 0 0 0;"/>
+            <PieChart fx:id="invoicePieChart" prefHeight="300" prefWidth="400"/>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.StarredViewController"
+            style="-fx-padding:20;">
+
+    <top>
+        <Label text="⭐ Starred Requests"
+               style="-fx-font-size:24; -fx-font-weight:bold;"
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <TableView fx:id="starredTable" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="submissionDateColumn" text="Date" prefWidth="120"/>
+                <TableColumn fx:id="invoiceAmountColumn" text="Invoice (€)" prefWidth="100"/>
+                <TableColumn fx:id="reimbursementAmountColumn" text="Reimbursement (€)" prefWidth="120"/>
+                <TableColumn fx:id="categoryColumn" text="Category" prefWidth="100"/>
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>
