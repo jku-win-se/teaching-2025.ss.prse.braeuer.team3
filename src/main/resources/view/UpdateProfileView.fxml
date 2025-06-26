@@ -2,34 +2,25 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.NotificationSettingsController"
-            prefWidth="400" prefHeight="300"
-            stylesheets="@/css/styles.css">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.UpdateProfileController"
+      spacing="10" alignment="CENTER" style="-fx-padding:20;">
 
-    <VBox alignment="CENTER" spacing="20" AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20"
-          AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+    <Label text="Profil aktualisieren" style="-fx-font-size:16; -fx-font-weight:bold;"/>
 
-        <Label text="Notification Preferences" styleClass="modal-title"/>
+    <GridPane hgap="10" vgap="10">
+        <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <GridPane hgap="10" vgap="10">
-            <columnConstraints>
-                <ColumnConstraints percentWidth="70"/>
-                <ColumnConstraints percentWidth="30"/>
-            </columnConstraints>
+        <Label text="E-Mail:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    </GridPane>
 
-            <Label text="Invoice Approved" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <ToggleSwitch fx:id="approvedToggle" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+    <Label fx:id="errorLabel" textFill="red"/>
 
-            <Label text="Invoice Rejected" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <ToggleSwitch fx:id="rejectedToggle" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
-            <Label text="Monthly Summary" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <ToggleSwitch fx:id="monthlyToggle" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-        </GridPane>
-
-        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 10;">
-            <Button text="Close" onAction="#handleClose" styleClass="secondary-button" prefWidth="100"/>
-        </HBox>
-    </VBox>
-</AnchorPane>
+    <HBox spacing="20" alignment="CENTER">
+        <Button text="Speichern" onAction="#handleSave" />
+        <Button text="Abbrechen" onAction="#handleCancel" />
+    </HBox>
+</VBox>
