@@ -50,7 +50,7 @@ Lunchify ist eine Desktop-Anwendung zur Verwaltung und Erstattung von Mitarbeite
 ### Entwurf
 
 #### UML–Diagramm  
-![UML Diagramm](docs/uml/Lunchify_UML.png)
+![UML Diagramm](docs/UML_Klassendiagram_2_Endversion.png)
 
 #### Verwendete Design Pattern(s)
 * **Model–View–Controller** (JavaFX + FXML)  
