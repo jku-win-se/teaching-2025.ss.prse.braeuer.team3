@@ -8,6 +8,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Session;
 import util.SupabaseUploadService;
+import model.RefundConfigDAO;
+
 
 import java.io.File;
 
@@ -88,14 +90,11 @@ public class AddInvoiceController {
             reimbursementAmountLabel.setText("-");
         }
     }
-
-    private double calculateReimbursement(double amount, String category) {
-        return switch (category.toLowerCase()) {
-            case "restaurant" -> Math.min(amount, 3.0);
-            case "supermarket" -> Math.min(amount, 2.5);
-            default -> 0.0;
-        };
+   private double calculateReimbursement(double amount, String category) {
+        RefundConfigDAO dao = new RefundConfigDAO();
+        return dao.calculateRefundAmount(category, amount);
     }
+
 
     private void closeWindow() {
         Stage stage = (Stage) chooseFileButton.getScene().getWindow();
